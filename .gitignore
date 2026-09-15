@@ -1,0 +1,18 @@
+# os
+.DS_Store
+*:Zone.Identifier
+[Tt]humbs.db
+[Dd]esktop.ini
+
+# lc3
+*.asm
+*.obj
+*.lc3
+*.sym
+*.lst
+*.bin
+*.hex
+*.log
+
+# lc3-test-suite runner
+runner.py
