@@ -115,5 +115,28 @@ endmacro()
 	Dispatches to the appropriate trap service routine.
 ]]
 macro(vm_exec_trap instruction)
-	# TODO: dispatch to vm_trap_<trap>
+	# decode the trap vector from bits [7, 0]
+	lc3_bits(${instruction} 0 8 trap_vector)
+
+	# dispatch to the trap
+	if(trap_vector EQUAL 0x20)
+		vm_trap_getc()
+	elseif(trap_vector EQUAL 0x21)
+		vm_trap_out()
+	elseif(trap_vector EQUAL 0x22)
+		vm_trap_puts()
+	elseif(trap_vector EQUAL 0x23)
+		vm_trap_in()
+	elseif(trap_vector EQUAL 0x24)
+		vm_trap_putsp()
+	elseif(trap_vector EQUAL 0x25)
+		vm_trap_halt()
+	elseif(trap_vector EQUAL 0x30)
+		vm_trap_putn()
+	elseif(trap_vector EQUAL 0x31)
+		vm_trap_reg()
+	else()
+		lc3_hex(${PC} pc_hex)
+		message(WARNING "Unknown TRAP vector x${trap_vector} at PC ${pc_hex}")
+	endif()
 endmacro()
