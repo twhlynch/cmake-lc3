@@ -71,3 +71,31 @@ endmacro()
 macro(lc3_mask input mask result)
 	math(EXPR ${result} "${input} & ${mask}")
 endmacro()
+
+#[[
+	Mask the high byte of a 16 bit word.
+]]
+macro(lc3_high_byte input result)
+	math(EXPR ${result} "(${input} >> ${LC3_BYTE_BITS}) & ${LC3_BYTE_MASK}")
+endmacro()
+
+#[[
+	Mask the low byte of a 16 bit word.
+]]
+macro(lc3_low_byte input result)
+	math(EXPR ${result} "${input} & ${LC3_BYTE_MASK}")
+endmacro()
+
+#[[
+	Print a single ASCII ordinal value to stdout without a newline.
+	Handles null bytes by emitting a real null byte since CMake cannot.
+]]
+macro(lc3_print_ord code)
+	if(${code} EQUAL 0)
+		# HACK: cmake cant print without a newline so we must use printf
+		execute_process(COMMAND /usr/bin/printf [[\0]])
+	else()
+		lc3_chr(${code} print_ord_char)
+		lc3_print("${print_ord_char}")
+	endif()
+endmacro()
