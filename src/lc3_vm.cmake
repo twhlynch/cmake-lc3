@@ -3,9 +3,10 @@
 ]]
 macro(vm_check_privileged addr)
 	lc3_mask(${addr} ${LC3_WORD_MASK} check_addr)
+	lc3_hex(${check_addr} check_hex)
 	lc3_assert(
 		check_addr GREATER_EQUAL ${LC3_USER_MIN} AND check_addr LESS ${LC3_USER_MAX}
-		"Access Control Violation at x${check_addr}"
+		"Access Control Violation at ${check_hex}"
 	)
 endmacro()
 
@@ -131,7 +132,8 @@ macro(lc3_vm_step)
 	elseif(opcode EQUAL 8) # 1000
 		vm_exec_rti(${instruction})
 	else()
-		message(FATAL_ERROR "Unknown opcode: ${opcode} at PC x${PC}")
+		lc3_hex(${PC} pc_hex)
+		message(FATAL_ERROR "Unknown opcode: ${opcode} at PC ${pc_hex}")
 	endif()
 endmacro()
 
