@@ -1,9 +1,14 @@
 cmake_minimum_required(VERSION 3.19)
 
-# include all src files
+# include everything here once instead of per file
 get_filename_component(lc3_dir "${CMAKE_CURRENT_LIST_DIR}" ABSOLUTE)
-file(GLOB lc3_cmake_files CONFIGURE_DEPENDS "${lc3_dir}/src/*.cmake")
-include(${lc3_cmake_files})
+
+include(${lc3_dir}/src/lc3_utils.cmake)
+include(${lc3_dir}/src/lc3_asm.cmake)
+include(${lc3_dir}/src/lc3_asm_encode.cmake)
+include(${lc3_dir}/src/lc3_vm.cmake)
+include(${lc3_dir}/src/lc3_vm_exec.cmake)
+include(${lc3_dir}/src/lc3_vm_traps.cmake)
 
 # cmake -P lc3.cmake CMAKE_ARGV3
 set(input "${CMAKE_ARGV3}")
