@@ -136,9 +136,9 @@ macro(lc3_vm_step)
 endmacro()
 
 #[[
-	Init VM and execute instructions until HALT.
+	Reset VM state.
 ]]
-macro(lc3_vm_run start_pc)
+macro(lc3_vm_reset)
 	# zero registers
 	set(R0 0)
 	set(R1 0)
@@ -154,11 +154,23 @@ macro(lc3_vm_run start_pc)
 	set(CC_Z 1)
 	set(CC_P 0)
 
+	# default to x3000
+	set(PC 12288)
+
+	# unhalt
+	set(VM_HALT 0)
+endmacro()
+
+#[[
+	Init VM and execute instructions until HALT.
+]]
+macro(lc3_vm_run start_pc)
+	lc3_vm_reset()
+
 	# jump to starting location
 	set(PC ${start_pc})
 
-	# unhalt and run
-	set(VM_HALT 0)
+	# run
 	while(NOT VM_HALT)
 		lc3_vm_step()
 		if(VM_HALT)
