@@ -57,14 +57,32 @@ endmacro()
 	Read a 16-bit word from memory orelse 0.
 ]]
 macro(vm_memread addr result)
-	# TODO: read from MEM_<ddr>
+	# check privilege
+	vm_check_privileged(${addr})
+
+	lc3_mask(${addr} ${LC3_WORD_MASK} mem_index)
+	if(DEFINED MEM_${mem_index})
+		# read if defined
+		set(${result} ${MEM_${mem_index}})
+	else()
+		# default to 0
+		set(${result} 0)
+	endif()
 endmacro()
 
 #[[
 	Write a 16-bit word to memory.
 ]]
 macro(vm_memwrite addr val)
-	# TODO: write to MEM_<ddr>
+	# check privilege
+	vm_check_privileged(${addr})
+
+	# mask
+	lc3_mask(${addr} ${LC3_WORD_MASK} mem_index)
+	lc3_mask(${val} ${LC3_WORD_MASK} mem_val)
+
+	# set memory
+	set(MEM_${mem_index} ${mem_val})
 endmacro()
 
 #[[
