@@ -9,14 +9,23 @@ endmacro()
 	Read the value of a register by number (0-7).
 ]]
 macro(vm_getreg reg_num result)
-	# TODO: set a register
+	lc3_assert(
+		${reg_num} GREATER_EQUAL 0 AND ${reg_num} LESS_EQUAL 7
+		"Invalid register ${reg_num}"
+	)
+	set(${result} ${R${reg_num}})
 endmacro()
 
 #[[
 	Write a value to a register by number (0-7).
 ]]
 macro(vm_setreg reg_num val)
-	# TODO: get a register
+	lc3_assert(
+		${reg_num} GREATER_EQUAL 0 AND ${reg_num} LESS_EQUAL 7
+		"Invalid register ${reg_num}"
+	)
+	lc3_mask(${val} ${LC3_WORD_MASK} masked_val)
+	set(R${reg_num} ${masked_val})
 endmacro()
 
 #[[
