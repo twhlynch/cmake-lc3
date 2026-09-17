@@ -43,7 +43,7 @@ endmacro()
 	Stop execution.
 ]]
 macro(vm_trap_halt)
-	# TODO: halt program
+	set(VM_HALT 1)
 endmacro()
 
 #[[
