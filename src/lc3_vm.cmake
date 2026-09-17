@@ -2,7 +2,11 @@
 	Verify an address is in user memory or crash.
 ]]
 macro(vm_check_privileged addr)
-	# TODO: check for privelaged memory access
+	lc3_mask(${addr} ${LC3_WORD_MASK} check_addr)
+	lc3_assert(
+		check_addr GREATER_EQUAL ${LC3_USER_MIN} AND check_addr LESS ${LC3_USER_MAX}
+		"Access Control Violation at x${check_addr}"
+	)
 endmacro()
 
 #[[
