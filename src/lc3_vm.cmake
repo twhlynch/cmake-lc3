@@ -36,7 +36,21 @@ endmacro()
 	Set N, Z, P flags based on a result value.
 ]]
 macro(vm_update_condition_codes val)
-	# TODO: set condition code
+	# get sign bit
+	lc3_mask(${val} ${LC3_WORD_MASK} cc_val)
+	lc3_bits(${cc_val} ${LC3_SIGN_BIT} 1 cc_bit)
+
+	set(CC_N 0)
+	set(CC_Z 0)
+	set(CC_P 0)
+
+	if(cc_bit)
+		set(CC_N 1)
+	elseif(cc_val EQUAL 0)
+		set(CC_Z 1)
+	else()
+		set(CC_P 1)
+	endif()
 endmacro()
 
 #[[
