@@ -119,3 +119,26 @@ endmacro()
 macro(lc3_bits value shift width result)
 	math(EXPR ${result} "(${value} >> ${shift}) & ((1 << ${width}) - 1)")
 endmacro()
+
+#[[
+	Format a 16-bit value as a hex string with "x" prefix.
+]]
+macro(lc3_hex val result)
+	lc3_mask(${val} ${LC3_WORD_MASK} hex_val)
+
+	set(hex_digits "0123456789ABCDEF")
+	set(${result} "")
+
+	# extract 4 hex digits from least significant to most significant
+	foreach(hex_index RANGE 3)
+		# extract the nibble at position hex_index
+		math(EXPR hex_nibble "${hex_val} >> ((${hex_index}) * 4)")
+		lc3_mask(${hex_nibble} "0xF" hex_nibble)
+
+		# get corresponding hex character
+		string(SUBSTRING "${hex_digits}" ${hex_nibble} 1 hex_char)
+		set(${result} "${hex_char}${${result}}")
+	endforeach()
+
+	set(${result} "x${${result}}")
+endmacro()
