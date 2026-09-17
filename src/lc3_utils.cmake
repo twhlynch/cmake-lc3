@@ -48,3 +48,26 @@ macro(lc3_print str)
 	execute_process(COMMAND /usr/bin/printf "%s" "${str}")
 endmacro()
 
+# MARK: math and conversions
+
+#[[
+	Convert a single character to its ASCII ordinal value.
+]]
+macro(lc3_ord char result)
+	string(HEX "${char}" hex_val)
+	math(EXPR ${result} "0x${hex_val}")
+endmacro()
+
+#[[
+	Convert an ASCII ordinal value to its ASCII character.
+]]
+macro(lc3_chr code result)
+	string(ASCII "${code}" ${result})
+endmacro()
+
+#[[
+	Mask a value with a bitmask.
+]]
+macro(lc3_mask input mask result)
+	math(EXPR ${result} "${input} & ${mask}")
+endmacro()
