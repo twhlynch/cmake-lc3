@@ -106,3 +106,15 @@ endmacro()
 macro(lc3_increment var)
 	math(EXPR ${var} "${${var}} + 1")
 endmacro()
+
+#[[
+	Extract a bit field from a value.
+
+	value:  the value to extract from
+	shift:  right-shift amount
+	width:  number of bits to extract
+	result: variable name to store the result
+]]
+macro(lc3_bits value shift width result)
+	math(EXPR ${result} "(${value} >> ${shift}) & ((1 << ${width}) - 1)")
+endmacro()
