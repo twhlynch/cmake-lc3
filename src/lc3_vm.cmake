@@ -89,7 +89,50 @@ endmacro()
 	Fetch, decode, and execute a single instruction.
 ]]
 macro(lc3_vm_step)
-	# TODO: read instruction, decode, dispatch to vm_exec_<instruction>
+	# read the instruction at PC
+	vm_check_privileged(${PC})
+	vm_memread(${PC} instruction)
+
+	# advance PC
+	lc3_increment(PC)
+
+	# decode the opcode from bits [15, 12]
+	math(EXPR opcode "${instruction} >> 12")
+
+	# dispatch the correct instruction
+	if(opcode EQUAL 1) # 0001
+		vm_exec_add(${instruction})
+	elseif(opcode EQUAL 5) # 0101
+		vm_exec_and(${instruction})
+	elseif(opcode EQUAL 0) # 0000
+		vm_exec_br(${instruction})
+	elseif(opcode EQUAL 12) # 1100
+		vm_exec_jmp(${instruction})
+	elseif(opcode EQUAL 4) # 0100
+		vm_exec_jsr(${instruction})
+	elseif(opcode EQUAL 2) # 0010
+		vm_exec_ld(${instruction})
+	elseif(opcode EQUAL 6) # 0110
+		vm_exec_ldr(${instruction})
+	elseif(opcode EQUAL 10) # 1010
+		vm_exec_ldi(${instruction})
+	elseif(opcode EQUAL 14) # 1110
+		vm_exec_lea(${instruction})
+	elseif(opcode EQUAL 9) # 1001
+		vm_exec_not(${instruction})
+	elseif(opcode EQUAL 3) # 0011
+		vm_exec_st(${instruction})
+	elseif(opcode EQUAL 11) # 1011
+		vm_exec_sti(${instruction})
+	elseif(opcode EQUAL 7) # 0111
+		vm_exec_str(${instruction})
+	elseif(opcode EQUAL 15) # 1111
+		vm_exec_trap(${instruction})
+	elseif(opcode EQUAL 8) # 1000
+		vm_exec_rti(${instruction})
+	else()
+		message(FATAL_ERROR "Unknown opcode: ${opcode} at PC x${PC}")
+	endif()
 endmacro()
 
 #[[
