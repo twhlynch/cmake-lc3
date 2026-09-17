@@ -51,5 +51,30 @@ endmacro()
 	Init VM and execute instructions until HALT.
 ]]
 macro(lc3_vm_run start_pc)
-	# TODO: initialize, jump to start, step while unhalted
+	# zero registers
+	set(R0 0)
+	set(R1 0)
+	set(R2 0)
+	set(R3 0)
+	set(R4 0)
+	set(R5 0)
+	set(R6 0)
+	set(R7 0)
+
+	# reset cc to zero
+	set(CC_N 0)
+	set(CC_Z 1)
+	set(CC_P 0)
+
+	# jump to starting location
+	set(PC ${start_pc})
+
+	# unhalt and run
+	set(VM_HALT 0)
+	while(NOT VM_HALT)
+		lc3_vm_step()
+		if(VM_HALT)
+			break()
+		endif()
+	endwhile()
 endmacro()
