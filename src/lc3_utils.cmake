@@ -25,3 +25,26 @@ macro(lc3_assert)
 		message(FATAL_ERROR "${assert_msg}")
 	endif()
 endmacro()
+
+#[[
+	Read a character from stdin.
+]]
+macro(lc3_input result)
+	# HACK: cmake cant read from stdin so we must use dd
+	execute_process(
+		COMMAND sh -c "dd bs=1 count=1 2>/dev/null"
+		INPUT_FILE /dev/stdin
+		OUTPUT_VARIABLE ${result}
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+		ERROR_QUIET
+	)
+endmacro()
+
+#[[
+	Print a string to stdout without a newline.
+]]
+macro(lc3_print str)
+	# HACK: cmake cant print without a newline so we must use printf
+	execute_process(COMMAND /usr/bin/printf "%s" "${str}")
+endmacro()
+
