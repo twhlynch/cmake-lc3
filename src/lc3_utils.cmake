@@ -99,3 +99,10 @@ macro(lc3_print_ord code)
 		lc3_print("${print_ord_char}")
 	endif()
 endmacro()
+
+#[[
+	Increment a variable by 1.
+]]
+macro(lc3_increment var)
+	math(EXPR ${var} "${${var}} + 1")
+endmacro()
