@@ -157,8 +157,10 @@ macro(vm_trap_reg)
 		lc3_fmt_sint(${reg_sint} 7 reg_sint_str)
 		# format uint as %6u
 		lc3_fmt_pad(${reg_val} 6 reg_uint_str)
+		# pad chr
+		lc3_fmt_pad(${reg_chr} 3 reg_chr_str)
 
-		lc3_print("| R${reg_idx}  ${reg_hex}  ${reg_sint_str}  ${reg_uint_str}   ${reg_chr} |\n")
+		lc3_print("| R${reg_idx}  ${reg_hex}  ${reg_sint_str}  ${reg_uint_str}   ${reg_chr_str} |\n")
 	endforeach()
 	lc3_print("+----------------+-----------------+\n")
 	lc3_print("|    PC ${pc_hex}    |   CC ${cc_str}   |\n")
