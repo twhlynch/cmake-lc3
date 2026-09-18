@@ -302,7 +302,21 @@ endmacro()
 	0111 SR1 BR1 offst6
 ]]
 macro(vm_exec_str instruction)
-	# TODO: Execute str instruction
+	# read SR and BR
+	lc3_bits(${instruction} 9 ${LC3_REGISTER_BITS} src_reg)
+	lc3_bits(${instruction} 6 ${LC3_REGISTER_BITS} base_reg)
+
+	# sign extend offset6
+	lc3_sign_extend("${instruction}" 6 offset)
+
+	# add base offset
+	vm_getreg(${src_reg} val)
+	vm_getreg(${base_reg} base_val)
+	math(EXPR effective_addr "${base_val} + ${offset}")
+	lc3_mask(${effective_addr} ${LC3_WORD_MASK} effective_addr)
+
+	# store SR in memory
+	vm_memwrite(${effective_addr} ${val})
 endmacro()
 
 #[[
