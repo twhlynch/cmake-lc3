@@ -142,3 +142,42 @@ macro(lc3_hex val result)
 
 	set(${result} "x${${result}}")
 endmacro()
+
+#[[
+	Convert a uint16 to an int16.
+]]
+macro(lc3_sint val result)
+	if(${val} GREATER_EQUAL 32768)
+		math(EXPR ${result} "${val} - 65536")
+	else()
+		set(${result} ${val})
+	endif()
+endmacro()
+
+#[[
+	Pad left width of string with spaces.
+]]
+macro(lc3_fmt_pad value width result)
+	# build padding
+	string(LENGTH "${value}" value_len)
+	math(EXPR fmt_pad "${width} - ${value_len}")
+	string(REPEAT " " ${fmt_pad} fmt_pad_str)
+
+	# join padding and value
+	set(${result} "${fmt_pad_str}${value}")
+endmacro()
+
+#[[
+	Format an int as %+Nd
+]]
+macro(lc3_fmt_sint val digits result)
+	# prepend + if positive
+	if(${val} GREATER_EQUAL 0)
+		set(fmt_str "+${val}")
+	else()
+		set(fmt_str "${val}")
+	endif()
+
+	# pad left
+	lc3_fmt_pad(${fmt_str} ${digits} ${result})
+endmacro()
