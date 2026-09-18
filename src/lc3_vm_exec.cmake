@@ -97,7 +97,11 @@ endmacro()
 	1100 000 BR1 000000
 ]]
 macro(vm_exec_jmp instruction)
-	# TODO: Execute JMP instruction
+	# read BR
+	lc3_bits(${instruction} 6 ${LC3_REGISTER_BITS} base_reg)
+	vm_getreg(${base_reg} base_val)
+	# jump PC to BR
+	lc3_mask(${base_val} ${LC3_WORD_MASK} PC)
 endmacro()
 
 #[[
