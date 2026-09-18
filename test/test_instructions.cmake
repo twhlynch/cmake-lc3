@@ -50,5 +50,11 @@ vm_exec_ld(8193) # ld r0 #1
 test_assert_equal("${R0}" "42" "ld")
 
 test_reset()
+set(MEM_12289 12290)
+set(MEM_12290 43)
+vm_exec_ldi(40961) # ldi r0 #1
+test_assert_equal("${R0}" "43" "ldi")
+
+test_reset()
 vm_exec_trap(61477) # trap x25 (halt)
 test_assert_equal("${VM_HALT}" "1" "trap")
