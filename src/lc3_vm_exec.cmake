@@ -166,7 +166,24 @@ endmacro()
 	0110 DR1 BR1 offst6
 ]]
 macro(vm_exec_ldr instruction)
-	# TODO: Execute ldr instruction
+	# read DR and BR
+	lc3_bits(${instruction} 9 ${LC3_REGISTER_BITS} dest_reg)
+	lc3_bits(${instruction} 6 ${LC3_REGISTER_BITS} base_reg)
+
+	# sign extend offset6
+	lc3_sign_extend("${instruction}" 6 offset)
+
+	# add base offset
+	vm_getreg(${base_reg} base_val)
+	math(EXPR effective_addr "${base_val} + ${offset}")
+	lc3_mask(${effective_addr} ${LC3_WORD_MASK} effective_addr)
+
+	# load from memory into DR
+	vm_memread(${effective_addr} val)
+	vm_setreg(${dest_reg} ${val})
+
+	# update cc
+	vm_update_condition_codes(${val})
 endmacro()
 
 #[[
