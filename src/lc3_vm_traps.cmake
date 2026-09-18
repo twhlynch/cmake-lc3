@@ -123,5 +123,42 @@ endmacro()
 	Print all registers.
 ]]
 macro(vm_trap_reg)
-	# TODO: print all registers
+	lc3_hex(${PC} pc_hex)
+	if(CC_N)
+		set(cc_str "NEGATIVE")
+	elseif(CC_Z)
+		set(cc_str "  ZERO  ")
+	elseif(CC_P)
+		set(cc_str "POSITIVE")
+	endif()
+
+	message(STATUS "+----------------------------------+")
+	message(STATUS "|       hex      int    uint   chr |")
+	foreach(reg_idx RANGE 0 7)
+		# get register
+		vm_getreg(${reg_idx} reg_val) # uint
+		lc3_sint(${reg_val} reg_sint) # sint
+		lc3_hex(${reg_val} reg_hex) # hex
+
+		# convert to ascii
+		if(reg_val GREATER_EQUAL 32 AND reg_val LESS_EQUAL 126)
+			lc3_chr(${reg_val} reg_chr)
+		else()
+			# non print can just be dashes
+			set(reg_chr "---")
+		endif()
+
+		# format sint as %+7d
+		lc3_fmt_sint(${reg_sint} 7 reg_sint_str)
+		# format uint as %6u
+		lc3_fmt_pad(${reg_val} 6 reg_uint_str)
+
+		message(
+			STATUS
+			"| R${reg_idx}  ${reg_hex}  ${reg_sint_str}  ${reg_uint_str}   ${reg_chr} |"
+		)
+	endforeach()
+	message(STATUS "+----------------+-----------------+")
+	message(STATUS "|    PC ${pc_hex}    |   CC ${cc_str}   |")
+	message(STATUS "+----------------+-----------------+")
 endmacro()
