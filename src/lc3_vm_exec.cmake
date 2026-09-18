@@ -259,7 +259,19 @@ endmacro()
 	0011 SR1 PCoffset9
 ]]
 macro(vm_exec_st instruction)
-	# TODO: Execute st instruction
+	# read SR
+	lc3_bits(${instruction} 9 ${LC3_REGISTER_BITS} src_reg)
+
+	# sign extend pcoffset9
+	lc3_sign_extend("${instruction}" 9 offset)
+
+	# add pc offset
+	vm_getreg(${src_reg} val)
+	math(EXPR effective_addr "${PC} + ${offset}")
+	lc3_mask(${effective_addr} ${LC3_WORD_MASK} effective_addr)
+
+	# store SR in memory
+	vm_memwrite(${effective_addr} ${val})
 endmacro()
 
 #[[
