@@ -76,6 +76,22 @@ set(R1 0)
 vm_exec_not(36991) # not r0 r1
 test_assert_equal("${R0}" "65535" "not")
 
+test_reset()
+set(R1 55)
+vm_exec_st(12801) # st r1 #1
+test_assert_equal("${MEM_12289}" "55" "st")
+
+test_reset()
+set(R1 56)
+set(MEM_12289 12290)
+vm_exec_sti(45569) # sti r1 #1
+test_assert_equal("${MEM_12290}" "56" "sti")
+
+test_reset()
+set(R1 57)
+set(R2 12288)
+vm_exec_str(29315) # str r1 r2 #3
+test_assert_equal("${MEM_12291}" "57" "str")
 
 test_reset()
 vm_exec_trap(61477) # trap x25 (halt)
