@@ -29,5 +29,21 @@ vm_exec_br(513) # brp #1
 test_assert_equal("${PC}" "12288" "br skip")
 
 test_reset()
+set(R2 12300)
+vm_exec_jmp(49280) # jmp r2
+test_assert_equal("${PC}" "12300" "jmp")
+
+test_reset()
+vm_exec_jsr(18437) # jsr #5
+test_assert_equal("${R7}" "12288" "jsr r7")
+test_assert_equal("${PC}" "12293" "jsr")
+
+test_reset()
+set(R2 12300)
+vm_exec_jsr(16512) # jsrr r2
+test_assert_equal("${R7}" "12288" "jsrr r7")
+test_assert_equal("${PC}" "12300" "jsrr")
+
+test_reset()
 vm_exec_trap(61477) # trap x25 (halt)
 test_assert_equal("${VM_HALT}" "1" "trap")
