@@ -217,7 +217,18 @@ endmacro()
 	1110 DR1 PCoffset9
 ]]
 macro(vm_exec_lea instruction)
-	# TODO: Execute lea instruction
+	# read DR
+	lc3_bits(${instruction} 9 ${LC3_REGISTER_BITS} dest_reg)
+
+	# sign extend pcoffset9
+	lc3_sign_extend("${instruction}" 9 offset)
+
+	# add pc offset
+	math(EXPR effective_addr "${PC} + ${offset}")
+	lc3_mask(${effective_addr} ${LC3_WORD_MASK} effective_addr)
+
+	# store address in DR
+	vm_setreg(${dest_reg} ${effective_addr})
 endmacro()
 
 #[[
