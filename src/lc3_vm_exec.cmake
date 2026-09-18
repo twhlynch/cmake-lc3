@@ -75,7 +75,20 @@ endmacro()
 	0000 N Z P pcoffset9
 ]]
 macro(vm_exec_br instruction)
-	# TODO: Execute br instruction
+	# read pcoffset9
+	lc3_sign_extend("${instruction}" 9 offset)
+
+	# read cc bits
+	lc3_bits(${instruction} 9 3 nzpc)
+	lc3_bits(${nzpc} 2 1 test_n)
+	lc3_bits(${nzpc} 1 1 test_z)
+	lc3_bits(${nzpc} 0 1 test_p)
+
+	# check against cc state
+	if((test_n AND CC_N) OR (test_z AND CC_Z) OR (test_p AND CC_P))
+		# jump pc offset
+		math(EXPR PC "${PC} + ${offset}")
+	endif()
 endmacro()
 
 #[[
