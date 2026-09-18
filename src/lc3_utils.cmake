@@ -3,9 +3,16 @@
 set(LC3_REGISTER_COUNT 8)
 
 set(LC3_BYTE_BITS 8)
+set(LC3_WORD_BITS 16)
+set(LC3_NIBBLE_BITS 4)
+set(LC3_NIBBLE_MASK 0xF)
 set(LC3_BYTE_MASK 0xFF)
 set(LC3_WORD_MASK 0xFFFF)
 set(LC3_SIGN_BIT 15)
+set(LC3_SIGN_MASK 0x8000)
+set(LC3_UINT16_WRAP 0x10000)
+set(LC3_INT16_MIN -32768)
+set(LC3_INT16_MAX 32767)
 
 set(LC3_ASCII_LIMIT 128)
 
@@ -109,6 +116,24 @@ macro(lc3_increment var)
 endmacro()
 
 #[[
+	Decrement a variable by 1.
+]]
+macro(lc3_decrement var)
+	math(EXPR ${var} "${${var}} - 1")
+endmacro()
+
+#[[
+	Check if a value is negative
+]]
+macro(lc3_is_negative val result)
+	if(${val} GREATER_EQUAL ${LC3_SIGN_MASK})
+		set(${result} TRUE)
+	else()
+		set(${result} FALSE)
+	endif()
+endmacro()
+
+#[[
 	Extract a bit field from a value.
 
 	value:  the value to extract from
@@ -132,8 +157,8 @@ macro(lc3_hex val result)
 	# extract 4 hex digits from least significant to most significant
 	foreach(hex_index RANGE 3)
 		# extract the nibble at position hex_index
-		math(EXPR hex_nibble "${hex_val} >> ((${hex_index}) * 4)")
-		lc3_mask(${hex_nibble} "0xF" hex_nibble)
+		math(EXPR hex_nibble "${hex_val} >> ((${hex_index}) * ${LC3_NIBBLE_BITS})")
+		lc3_mask(${hex_nibble} "${LC3_NIBBLE_MASK}" hex_nibble)
 
 		# get corresponding hex character
 		string(SUBSTRING "${hex_digits}" ${hex_nibble} 1 hex_char)
@@ -147,8 +172,19 @@ endmacro()
 	Convert a uint16 to an int16.
 ]]
 macro(lc3_sint val result)
-	if(${val} GREATER_EQUAL 32768)
-		math(EXPR ${result} "${val} - 65536")
+	if(${val} GREATER_EQUAL ${LC3_SIGN_MASK})
+		math(EXPR ${result} "${val} - ${LC3_UINT16_WRAP}")
+	else()
+		set(${result} ${val})
+	endif()
+endmacro()
+
+#[[
+	Convert a signed integer to an unsigned integer.
+]]
+macro(lc3_uint val result)
+	if(${val} LESS 0)
+		math(EXPR ${result} "${LC3_UINT16_WRAP} + ${val}")
 	else()
 		set(${result} ${val})
 	endif()
