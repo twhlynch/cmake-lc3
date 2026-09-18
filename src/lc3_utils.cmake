@@ -217,3 +217,23 @@ macro(lc3_fmt_sint val digits result)
 	# pad left
 	lc3_fmt_pad(${fmt_str} ${digits} ${result})
 endmacro()
+
+#[[
+	Sign extend a value from 'bits' wide to 16 bits.
+]]
+macro(lc3_sign_extend val bits result)
+	# extract the value and check sign
+	math(EXPR se_val "${val} & ((1 << ${bits}) - 1)")
+	math(EXPR se_mask "1 << (${bits} - 1)")
+	math(EXPR se_check "${se_val} & ${se_mask}")
+
+	if(se_check)
+		# fill upper bits with 1s
+		math(EXPR se_extend "((1 << (${LC3_WORD_BITS} - ${bits})) - 1) << ${bits}")
+		math(EXPR se_val "${se_val} | ${se_extend}")
+	endif()
+
+	# mask result
+	math(EXPR ${result} "${se_val} & ${LC3_WORD_MASK}")
+endmacro()
+
