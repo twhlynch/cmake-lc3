@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.19)
 get_filename_component(lc3_dir "${CMAKE_CURRENT_LIST_DIR}" ABSOLUTE)
 
 include(${lc3_dir}/src/lc3_utils.cmake)
+include(${lc3_dir}/src/lc3_asm_parse.cmake)
 include(${lc3_dir}/src/lc3_asm.cmake)
 include(${lc3_dir}/src/lc3_asm_encode.cmake)
 include(${lc3_dir}/src/lc3_vm.cmake)

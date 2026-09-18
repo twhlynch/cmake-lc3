@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 3.19)
 get_filename_component(REPO_ROOT "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
 
 include(${REPO_ROOT}/src/lc3_utils.cmake)
+include(${REPO_ROOT}/src/lc3_asm_parse.cmake)
 include(${REPO_ROOT}/src/lc3_asm.cmake)
 include(${REPO_ROOT}/src/lc3_asm_encode.cmake)
 include(${REPO_ROOT}/src/lc3_vm.cmake)

@@ -18,5 +18,7 @@ endmacro()
 	Reads the file, runs both passes, and populates MEM_<addr> variables.
 ]]
 macro(lc3_asm_assemble filename)
+	# read source
+	asm_read_source("${filename}" source_lines)
 	# TODO: assemble
 endmacro()
