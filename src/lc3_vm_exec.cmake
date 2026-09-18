@@ -1,9 +1,36 @@
 #[[
 	ADD (0001)
 	DR = SR1 + SR2 or DR = SR1 + SEXT(imm5)
+	0001 DR1 SR1 0 00 SR2
+	0001 DR1 SR1 1 imm5_
 ]]
 macro(vm_exec_add instruction)
-	# TODO: Execute add instruction
+	# read DR and SR1
+	lc3_bits(${instruction} 9 3 dest_reg) # DR = [9, 11]
+	lc3_bits(${instruction} 6 3 src1_reg) # SR1 = [6, 8]
+
+	# read mode bit
+	lc3_bits(${instruction} 5 1 imm_mode)
+
+	if(imm_mode)
+		# sign extend imm5
+		lc3_sign_extend("${instruction}" 5 val2)
+	else()
+		# read SR2
+		lc3_bits(${instruction} 0 3 src2_reg) # SR2 = [0, 2]
+		vm_getreg(${src2_reg} val2)
+	endif()
+
+	# add SR1 and value
+	vm_getreg(${src1_reg} val1)
+	math(EXPR result "${val1} + ${val2}")
+
+	# store result in DR
+	lc3_mask(${result} ${LC3_WORD_MASK} result)
+	vm_setreg(${dest_reg} ${result})
+
+	# update cc
+	vm_update_condition_codes(${result})
 endmacro()
 
 #[[
