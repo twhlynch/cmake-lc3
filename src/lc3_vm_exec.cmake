@@ -237,7 +237,20 @@ endmacro()
 	1001 DR1 SR1 111111
 ]]
 macro(vm_exec_not instruction)
-	# TODO: Execute not instruction
+	# read DR and SR
+	lc3_bits(${instruction} 9 ${LC3_REGISTER_BITS} dest_reg)
+	lc3_bits(${instruction} 6 ${LC3_REGISTER_BITS} src_reg)
+
+	# not SR
+	vm_getreg(${src_reg} val)
+	math(EXPR result "~${val}")
+
+	# store result in DR
+	lc3_mask(${result} ${LC3_WORD_MASK} result)
+	vm_setreg(${dest_reg} ${result})
+
+	# update cc
+	vm_update_condition_codes(${result})
 endmacro()
 
 #[[
