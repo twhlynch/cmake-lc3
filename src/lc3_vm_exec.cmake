@@ -6,8 +6,8 @@
 ]]
 macro(vm_exec_add instruction)
 	# read DR and SR1
-	lc3_bits(${instruction} 9 3 dest_reg) # DR = [9, 11]
-	lc3_bits(${instruction} 6 3 src1_reg) # SR1 = [6, 8]
+	lc3_bits(${instruction} 9 ${LC3_REGISTER_BITS} dest_reg) # DR = [9, 11]
+	lc3_bits(${instruction} 6 ${LC3_REGISTER_BITS} src1_reg) # SR1 = [6, 8]
 
 	# read mode bit
 	lc3_bits(${instruction} 5 1 imm_mode)
@@ -17,7 +17,7 @@ macro(vm_exec_add instruction)
 		lc3_sign_extend("${instruction}" 5 val2)
 	else()
 		# read SR2
-		lc3_bits(${instruction} 0 3 src2_reg) # SR2 = [0, 2]
+		lc3_bits(${instruction} 0 ${LC3_REGISTER_BITS} src2_reg) # SR2 = [0, 2]
 		vm_getreg(${src2_reg} val2)
 	endif()
 

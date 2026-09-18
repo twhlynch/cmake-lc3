@@ -1,6 +1,7 @@
 # MARK: contants
 
 set(LC3_REGISTER_COUNT 8)
+set(LC3_REGISTER_BITS 3)
 
 set(LC3_BYTE_BITS 8)
 set(LC3_WORD_BITS 16)
