@@ -140,6 +140,7 @@ endmacro()
 #[[
 	TRAP handler
 	Dispatches to the appropriate trap service routine.
+	1111 0000 trapvec8
 ]]
 macro(vm_exec_trap instruction)
 	# decode the trap vector from bits [7, 0]
