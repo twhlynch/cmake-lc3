@@ -14,7 +14,7 @@ include(${lc3_dir}/src/lc3_vm_traps.cmake)
 set(input "${CMAKE_ARGV3}")
 
 if(input STREQUAL "")
-	message(STATUS "Usage: cmake -P lc3.cmake example.asm")
+	lc3_print("Usage: cmake -P lc3.cmake example.asm\n")
 	message(FATAL_ERROR "No input file provided")
 endif()
 

@@ -55,7 +55,7 @@ endmacro()
 	Prompt and read a character from stdin into R0.
 ]]
 macro(vm_trap_in)
-	message(STATUS "Input: ")
+	lc3_print("Input: ")
 
 	# get input
 	lc3_input(in_char)
@@ -132,8 +132,8 @@ macro(vm_trap_reg)
 		set(cc_str "POSITIVE")
 	endif()
 
-	message(STATUS "+----------------------------------+")
-	message(STATUS "|       hex      int    uint   chr |")
+	lc3_print("+----------------------------------+\n")
+	lc3_print("|       hex      int    uint   chr |\n")
 	foreach(reg_idx RANGE 0 7)
 		# get register
 		vm_getreg(${reg_idx} reg_val) # uint
@@ -153,12 +153,9 @@ macro(vm_trap_reg)
 		# format uint as %6u
 		lc3_fmt_pad(${reg_val} 6 reg_uint_str)
 
-		message(
-			STATUS
-			"| R${reg_idx}  ${reg_hex}  ${reg_sint_str}  ${reg_uint_str}   ${reg_chr} |"
-		)
+		lc3_print("| R${reg_idx}  ${reg_hex}  ${reg_sint_str}  ${reg_uint_str}   ${reg_chr} |\n")
 	endforeach()
-	message(STATUS "+----------------+-----------------+")
-	message(STATUS "|    PC ${pc_hex}    |   CC ${cc_str}   |")
-	message(STATUS "+----------------+-----------------+")
+	lc3_print("+----------------+-----------------+\n")
+	lc3_print("|    PC ${pc_hex}    |   CC ${cc_str}   |\n")
+	lc3_print("+----------------+-----------------+\n")
 endmacro()
