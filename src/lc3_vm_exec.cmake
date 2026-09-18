@@ -192,7 +192,7 @@ endmacro()
 	1000 000000000000
 ]]
 macro(vm_exec_rti instruction)
-	# TODO: Execute rti instruction (maybe)
+	# NOP for now
 endmacro()
 
 #[[
