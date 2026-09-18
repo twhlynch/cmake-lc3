@@ -49,3 +49,4 @@ get_filename_component(TEST_ROOT "${CMAKE_CURRENT_LIST_DIR}" ABSOLUTE)
 
 include(${TEST_ROOT}/test_traps.cmake)
 include(${TEST_ROOT}/test_instructions.cmake)
+include(${TEST_ROOT}/test_parse.cmake)
