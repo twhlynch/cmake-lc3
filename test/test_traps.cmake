@@ -89,3 +89,10 @@ math(EXPR MEM_12288 "0x4241") # A (0x41) B (0x42)
 set(MEM_12289 0) # \0
 vm_trap_putsp()
 test_assert_equal("${CAPTURED_OUTPUT}" "65;66" "putsp")
+
+test_reset()
+set(R0 72)
+set(R1 10)
+set(R2 32)
+vm_trap_reg()
+# doesnt actually test anything but shows output
