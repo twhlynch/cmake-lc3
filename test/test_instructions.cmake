@@ -21,5 +21,13 @@ vm_exec_and(20579) # and r0 r1 #3
 test_assert_equal("${R0}" "2" "and imm")
 
 test_reset()
+vm_exec_br(1026) # brz #2
+test_assert_equal("${PC}" "12290" "br")
+
+test_reset()
+vm_exec_br(513) # brp #1
+test_assert_equal("${PC}" "12288" "br skip")
+
+test_reset()
 vm_exec_trap(61477) # trap x25 (halt)
 test_assert_equal("${VM_HALT}" "1" "trap")
