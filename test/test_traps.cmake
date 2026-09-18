@@ -90,9 +90,14 @@ set(MEM_12289 0) # \0
 vm_trap_putsp()
 test_assert_equal("${CAPTURED_OUTPUT}" "65;66" "putsp")
 
+# putn and reg dont test anything just show output
+
+test_reset()
+set(R0 65535)
+vm_trap_putn()
+
 test_reset()
 set(R0 72)
 set(R1 10)
 set(R2 32)
 vm_trap_reg()
-# doesnt actually test anything but shows output

@@ -115,7 +115,12 @@ endmacro()
 	Print the value in R0 as a decimal number.
 ]]
 macro(vm_trap_putn)
-	# TODO: print
+	# mask
+	lc3_mask(${R0} ${LC3_WORD_MASK} putn_val)
+	# convert to sint
+	lc3_sint(${putn_val} putn_sint)
+	# print
+	lc3_print("${putn_sint}")
 endmacro()
 
 #[[
