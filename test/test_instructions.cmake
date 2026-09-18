@@ -67,6 +67,10 @@ set(MEM_12290 44)
 vm_exec_ldr(24702) # ldr r0 r1 #-2
 test_assert_equal("${R0}" "44" "ldr negative")
 
+test_reset()
+vm_exec_lea(57345) # lea r0 #1
+test_assert_equal("${R0}" "12289" "lea")
+
 
 test_reset()
 vm_exec_trap(61477) # trap x25 (halt)
