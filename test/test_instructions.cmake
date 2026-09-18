@@ -45,5 +45,10 @@ test_assert_equal("${R7}" "12288" "jsrr r7")
 test_assert_equal("${PC}" "12300" "jsrr")
 
 test_reset()
+set(MEM_12289 42)
+vm_exec_ld(8193) # ld r0 #1
+test_assert_equal("${R0}" "42" "ld")
+
+test_reset()
 vm_exec_trap(61477) # trap x25 (halt)
 test_assert_equal("${VM_HALT}" "1" "trap")
