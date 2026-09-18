@@ -40,7 +40,33 @@ endmacro()
 	0101 DR1 SR1 1 imm5_
 ]]
 macro(vm_exec_and instruction)
-	# TODO: Execute and instruction
+	# read DR and SR1
+	lc3_bits(${instruction} 9 ${LC3_REGISTER_BITS} dest_reg)
+	lc3_bits(${instruction} 6 ${LC3_REGISTER_BITS} src1_reg)
+
+	# read mode bit
+	lc3_bits(${instruction} 5 1 imm_mode)
+
+	vm_getreg(${src1_reg} val1)
+	if(imm_mode)
+		# sign extend imm5
+		lc3_sign_extend("${instruction}" 5 val2)
+	else()
+		# read SR2
+		lc3_bits(${instruction} 0 ${LC3_REGISTER_BITS} src2_reg)
+		vm_getreg(${src2_reg} val2)
+	endif()
+
+	# and SR1 and value
+	vm_getreg(${src1_reg} val1)
+	math(EXPR result "${val1} & ${val2}")
+
+	# store result in DR
+	lc3_mask(${result} ${LC3_WORD_MASK} result)
+	vm_setreg(${dest_reg} ${result})
+
+	# update cc
+	vm_update_condition_codes(${result})
 endmacro()
 
 #[[
