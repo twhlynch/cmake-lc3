@@ -56,5 +56,18 @@ vm_exec_ldi(40961) # ldi r0 #1
 test_assert_equal("${R0}" "43" "ldi")
 
 test_reset()
+set(R1 12288)
+set(MEM_12290 44)
+vm_exec_ldr(24642) # ldr r0 r1 #2
+test_assert_equal("${R0}" "44" "ldr")
+
+test_reset()
+set(R1 12292)
+set(MEM_12290 44)
+vm_exec_ldr(24702) # ldr r0 r1 #-2
+test_assert_equal("${R0}" "44" "ldr negative")
+
+
+test_reset()
 vm_exec_trap(61477) # trap x25 (halt)
 test_assert_equal("${VM_HALT}" "1" "trap")
