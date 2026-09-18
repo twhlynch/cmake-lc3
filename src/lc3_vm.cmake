@@ -1,16 +1,4 @@
 #[[
-	Verify an address is in user memory or crash.
-]]
-macro(vm_check_privileged addr)
-	lc3_mask(${addr} ${LC3_WORD_MASK} check_addr)
-	lc3_hex(${check_addr} check_hex)
-	lc3_assert(
-		check_addr GREATER_EQUAL ${LC3_USER_MIN} AND check_addr LESS ${LC3_USER_MAX}
-		"Access Control Violation at ${check_hex}"
-	)
-endmacro()
-
-#[[
 	Read the value of a register by number (0-7).
 ]]
 macro(vm_getreg reg_num result)
@@ -59,7 +47,7 @@ endmacro()
 ]]
 macro(vm_memread addr result)
 	# check privilege
-	vm_check_privileged(${addr})
+	lc3_check_privileged(${addr})
 
 	lc3_mask(${addr} ${LC3_WORD_MASK} mem_index)
 	if(DEFINED MEM_${mem_index})
@@ -76,7 +64,7 @@ endmacro()
 ]]
 macro(vm_memwrite addr val)
 	# check privilege
-	vm_check_privileged(${addr})
+	lc3_check_privileged(${addr})
 
 	# mask
 	lc3_mask(${addr} ${LC3_WORD_MASK} mem_index)
@@ -91,7 +79,7 @@ endmacro()
 ]]
 macro(lc3_vm_step)
 	# read the instruction at PC
-	vm_check_privileged(${PC})
+	lc3_check_privileged(${PC})
 	vm_memread(${PC} instruction)
 
 	# advance PC

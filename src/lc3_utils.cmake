@@ -238,3 +238,16 @@ macro(lc3_sign_extend val bits result)
 	math(EXPR ${result} "${se_val} & ${LC3_WORD_MASK}")
 endmacro()
 
+# MARK: memory
+
+#[[
+	Verify an address is in user memory or crash.
+]]
+macro(lc3_check_privileged addr)
+	lc3_mask(${addr} ${LC3_WORD_MASK} check_addr)
+	lc3_hex(${check_addr} check_hex)
+	lc3_assert(
+		check_addr GREATER_EQUAL ${LC3_USER_MIN} AND check_addr LESS ${LC3_USER_MAX}
+		"Access Control Violation at ${check_hex}"
+	)
+endmacro()
