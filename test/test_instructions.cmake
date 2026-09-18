@@ -94,5 +94,11 @@ vm_exec_str(29315) # str r1 r2 #3
 test_assert_equal("${MEM_12291}" "57" "str")
 
 test_reset()
+set(R6 12290)
+set(MEM_12289 12300)
+vm_exec_rti(32768) # rti
+test_assert_equal("${PC}" "12300" "rti")
+
+test_reset()
 vm_exec_trap(61477) # trap x25 (halt)
 test_assert_equal("${VM_HALT}" "1" "trap")
