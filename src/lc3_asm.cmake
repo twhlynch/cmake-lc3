@@ -202,7 +202,6 @@ macro(asm_pass2 source_lines_var labels_var)
 		endif()
 	endforeach()
 
-	set(ASM_ORIGIN ${origin})
 	set(ASM_PC ${origin})
 endmacro()
 
