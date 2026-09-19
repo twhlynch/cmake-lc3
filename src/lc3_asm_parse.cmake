@@ -199,3 +199,18 @@ macro(asm_is_instruction name result)
 		"^(ADD|AND|BR|BRN|BRZ|BRP|BRNZ|BRNP|BRZP|BRNZP|JMP|JSR|JSRR|LD|LDI|LDR|LEA|NOT|ST|STI|STR|TRAP|RTI|HALT|RET|PUTS|PUTSP|GETC|OUT|IN|PUTN|REG)$"
 	)
 endmacro()
+
+#[[
+	Check if a token is an assembler directive.
+]]
+macro(asm_is_directive name result)
+	# normalise to uppercase
+	string(TOUPPER "${name}" upper_name)
+
+	# check against directives
+	set_bool(
+		${result}
+		upper_name MATCHES
+		"^\\.(ORIG|END|FILL|BLKW|STRINGZ)$"
+	)
+endmacro()
