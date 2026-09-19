@@ -101,3 +101,11 @@ test_assert_equal("${num}" "-10" "-0xN")
 
 lc3_num("+0xA" num)
 test_assert_equal("${num}" "10" "+0xN")
+
+# lc3_reg
+
+lc3_reg("R0" reg)
+test_assert_equal("${reg}" "0" "R0")
+
+lc3_reg("r7" reg)
+test_assert_equal("${reg}" "7" "r7")

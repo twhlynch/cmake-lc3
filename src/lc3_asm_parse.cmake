@@ -170,3 +170,17 @@ macro(lc3_num str result)
 	# evaluate with math
 	math(EXPR ${result} "${num}")
 endmacro()
+
+#[[
+	Parse a register name to its number.
+]]
+macro(lc3_reg str result)
+	# normalise to uppercase
+	string(TOUPPER "${str}" upper_reg)
+
+	# must match R0-R7
+	lc3_assert(upper_reg MATCHES "^R[0-7]$" "Invalid register: ${str}")
+
+	# return the digit
+	string(SUBSTRING "${upper_reg}" 1 1 ${result})
+endmacro()
