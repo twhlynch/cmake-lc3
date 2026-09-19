@@ -1,5 +1,16 @@
 cmake_minimum_required(VERSION 3.19)
 
+#[[
+	Global state:
+
+	R0-R7            registers
+	PC               program counter
+	CC_N/CC_Z/CC_P   condition codes
+	VM_HALT          execution state
+	MEM_<addr>       memory at <addr>
+	ASM_PC           PC to start at
+]]
+
 # include everything here once instead of per file
 get_filename_component(lc3_dir "${CMAKE_CURRENT_LIST_DIR}" ABSOLUTE)
 
