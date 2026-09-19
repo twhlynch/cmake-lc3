@@ -199,6 +199,28 @@ macro(lc3_reg str result)
 endmacro()
 
 #[[
+	Check if a string is a valid number.
+]]
+macro(asm_is_number str result)
+	if("${str}" MATCHES "${LC3_NUM_PATTERN}")
+		set(${result} TRUE)
+	else()
+		set(${result} FALSE)
+	endif()
+endmacro()
+
+#[[
+	Check if a string is a valid register.
+]]
+macro(asm_is_register str result)
+	if("${str}" MATCHES "${LC3_REG_PATTERN}")
+		set(${result} TRUE)
+	else()
+		set(${result} FALSE)
+	endif()
+endmacro()
+
+#[[
 	Check if a token is a known instruction or pseudoop.
 ]]
 macro(asm_is_instruction name result)
