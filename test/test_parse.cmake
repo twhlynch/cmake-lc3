@@ -137,3 +137,60 @@ test_assert_equal("${is_dir}" "TRUE" "lowercase directive")
 
 asm_is_directive(".EXTERN" is_dir)
 test_assert_equal("${is_dir}" "FALSE" "not directive")
+
+# asm_is_number
+
+asm_is_number("#10" is_num)
+test_assert_equal("${is_num}" "TRUE" "is number hash")
+
+asm_is_number("xFF" is_num)
+test_assert_equal("${is_num}" "TRUE" "is number hex")
+
+asm_is_number("42" is_num)
+test_assert_equal("${is_num}" "TRUE" "is number decimal")
+
+asm_is_number("R0" is_num)
+test_assert_equal("${is_num}" "FALSE" "is number register")
+
+asm_is_number("ADD" is_num)
+test_assert_equal("${is_num}" "FALSE" "is number instruction")
+
+# asm_is_register
+
+asm_is_register("R0" is_reg)
+test_assert_equal("${is_reg}" "TRUE" "is register R0")
+
+asm_is_register("r7" is_reg)
+test_assert_equal("${is_reg}" "TRUE" "is register lowercase")
+
+asm_is_register("R8" is_reg)
+test_assert_equal("${is_reg}" "FALSE" "is register R8")
+
+asm_is_register("ADD" is_reg)
+test_assert_equal("${is_reg}" "FALSE" "is register instruction")
+
+# asm_is_label
+
+asm_is_label("LOOP" is_label)
+test_assert_equal("${is_label}" "TRUE" "is label")
+
+asm_is_label("ABCDEFGHIJKLMNOPQRST" is_label)
+test_assert_equal("${is_label}" "TRUE" "is label 20 chars")
+
+asm_is_label("ABCDEFGHIJKLMNOPQRSTU" is_label)
+test_assert_equal("${is_label}" "FALSE" "is label 21 chars")
+
+asm_is_label("123" is_label)
+test_assert_equal("${is_label}" "FALSE" "is label number")
+
+asm_is_label("x10" is_label)
+test_assert_equal("${is_label}" "FALSE" "is label hex")
+
+asm_is_label("R0" is_label)
+test_assert_equal("${is_label}" "FALSE" "is label register")
+
+asm_is_label("ADD" is_label)
+test_assert_equal("${is_label}" "FALSE" "is label instruction")
+
+asm_is_label(".ORIG" is_label)
+test_assert_equal("${is_label}" "FALSE" "is label directive")
