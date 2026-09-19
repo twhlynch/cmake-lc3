@@ -55,3 +55,49 @@ test_assert_equal("${tokens}" ".STRINGZ;\"a,b\"" "tokenize comma in string")
 
 lc3_tokenize("NOT R1 R1," tokens)
 test_assert_equal("${tokens}" "NOT;R1;R1" "no empty token")
+
+# lc3_num
+
+# #N #-N #+N
+
+lc3_num("#10" num)
+test_assert_equal("${num}" "10" "#N")
+
+lc3_num("#-10" num)
+test_assert_equal("${num}" "-10" "#-N")
+
+lc3_num("#+10" num)
+test_assert_equal("${num}" "10" "#+N")
+
+# N -N +N
+
+lc3_num("10" num)
+test_assert_equal("${num}" "10" "N")
+
+lc3_num("-10" num)
+test_assert_equal("${num}" "-10" "-N")
+
+lc3_num("+10" num)
+test_assert_equal("${num}" "10" "+N")
+
+# xN -xN +xN
+
+lc3_num("xA" num)
+test_assert_equal("${num}" "10" "xN")
+
+lc3_num("-xA" num)
+test_assert_equal("${num}" "-10" "-xN")
+
+lc3_num("+xA" num)
+test_assert_equal("${num}" "10" "+xN")
+
+# 0xN -0xN +0xN
+
+lc3_num("0xA" num)
+test_assert_equal("${num}" "10" "0xN")
+
+lc3_num("-0xA" num)
+test_assert_equal("${num}" "-10" "-0xN")
+
+lc3_num("+0xA" num)
+test_assert_equal("${num}" "10" "+0xN")
