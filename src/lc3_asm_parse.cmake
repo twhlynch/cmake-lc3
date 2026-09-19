@@ -1,6 +1,7 @@
 # regex patterns
 set(LC3_NUM_PATTERN "^(#?[+-]?[0-9]+|[+-]?0?x[0-9a-fA-F]+)$")
 set(LC3_REG_PATTERN "^[Rr][0-7]$")
+set(LC3_LABEL_PATTERN "^[A-Za-z_][A-Za-z0-9_]*$")
 set(
 	LC3_INSTRUCTION_PATTERN
 	"^(ADD|AND|BR|BRN|BRZ|BRP|BRNZ|BRNP|BRZP|BRNZP|JMP|JSR|JSRR|LD|LDI|LDR|LEA|NOT|ST|STI|STR|TRAP|RTI|HALT|RET|PUTS|PUTSP|GETC|OUT|IN|PUTN|REG)$"
@@ -248,4 +249,25 @@ macro(asm_is_directive name result)
 		upper_name MATCHES
 		"${LC3_DIRECTIVE_PATTERN}"
 	)
+endmacro()
+
+#[[
+	Check if a token is a valid label.
+]]
+macro(asm_is_label name result)
+	string(LENGTH "${name}" label_len)
+	if(
+		# matches pattern
+		"${name}" MATCHES "${LC3_LABEL_PATTERN}"
+		# length <= 20
+		AND label_len LESS_EQUAL 20
+	)
+		asm_is_instruction("${name}" is_instruction)
+		asm_is_register("${name}" is_register)
+		asm_is_number("${name}" is_number)
+
+		set_bool(${result} NOT is_instruction AND NOT is_register AND NOT is_number)
+	else()
+		set(${result} FALSE)
+	endif()
 endmacro()
