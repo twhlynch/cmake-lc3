@@ -147,3 +147,25 @@ macro(lc3_tokenize line result)
 		endif()
 	endwhile()
 endmacro()
+
+#[[
+	Parse a numeric string to an integer value.
+	Supported formats: #N #-N #+N N -N +N xN -xN +xN 0xN -0xN +0xN
+]]
+macro(lc3_num str result)
+	# validate with regex
+	lc3_assert(
+		"${str}" MATCHES
+		"^(#?[+-]?[0-9]+|[+-]?0?x[0-9a-fA-F]+)$"
+		"Invalid number: ${str}"
+	)
+
+	# strip # prefix
+	string(REGEX REPLACE "#" "" num "${str}")
+
+	# add 0 prefix for hex
+	string(REGEX REPLACE "^([+-]?)x" "\\10x" num "${num}")
+
+	# evaluate with math
+	math(EXPR ${result} "${num}")
+endmacro()
