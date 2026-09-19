@@ -282,3 +282,21 @@ macro(asm_check_directive token)
 		message(FATAL_ERROR "Invalid directive: ${token}")
 	endif()
 endmacro()
+
+#[[
+	Detect whether the first token is a label.
+]]
+macro(asm_detect_label tokens has_label label_name)
+	set(${has_label} FALSE)
+	set(${label_name} "")
+
+	# get token
+	list(GET ${tokens} 0 first_token)
+
+	# check
+	asm_is_label("${first_token}" is_label)
+	if(is_label)
+		set(${has_label} TRUE)
+		set(${label_name} "${first_token}")
+	endif()
+endmacro()
