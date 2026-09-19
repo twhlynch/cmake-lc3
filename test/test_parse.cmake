@@ -109,3 +109,31 @@ test_assert_equal("${reg}" "0" "R0")
 
 lc3_reg("r7" reg)
 test_assert_equal("${reg}" "7" "r7")
+
+# asm_is_instruction
+
+asm_is_instruction("ADD" is_instr)
+test_assert_equal("${is_instr}" "TRUE" "instruction")
+
+asm_is_instruction("brnzp" is_instr)
+test_assert_equal("${is_instr}" "TRUE" "lowercase instruction")
+
+asm_is_instruction("HALT" is_instr)
+test_assert_equal("${is_instr}" "TRUE" "pseudoop")
+
+asm_is_instruction("LOOP" is_instr)
+test_assert_equal("${is_instr}" "FALSE" "label")
+
+asm_is_instruction(".ORIG" is_instr)
+test_assert_equal("${is_instr}" "FALSE" "directive")
+
+# asm_is_directive
+
+asm_is_directive(".ORIG" is_dir)
+test_assert_equal("${is_dir}" "TRUE" "directive")
+
+asm_is_directive(".STRINGZ" is_dir)
+test_assert_equal("${is_dir}" "TRUE" "lowercase directive")
+
+asm_is_directive(".EXTERN" is_dir)
+test_assert_equal("${is_dir}" "FALSE" "not directive")
