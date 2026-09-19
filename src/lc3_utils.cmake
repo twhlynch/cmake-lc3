@@ -127,11 +127,7 @@ endmacro()
 	Check if a value is negative
 ]]
 macro(lc3_is_negative val result)
-	if(${val} GREATER_EQUAL ${LC3_SIGN_MASK})
-		set(${result} TRUE)
-	else()
-		set(${result} FALSE)
-	endif()
+	set_bool(${result} ${val} GREATER_EQUAL ${LC3_SIGN_MASK})
 endmacro()
 
 #[[
@@ -236,6 +232,14 @@ macro(lc3_sign_extend val bits result)
 
 	# mask result
 	math(EXPR ${result} "${se_val} & ${LC3_WORD_MASK}")
+endmacro()
+
+macro(set_bool result)
+	if(${ARGN})
+		set(${result} TRUE)
+	else()
+		set(${result} FALSE)
+	endif()
 endmacro()
 
 # MARK: memory
