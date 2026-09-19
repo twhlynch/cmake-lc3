@@ -10,8 +10,14 @@ cmake -P lc3.cmake example.asm
 
 ## Testing
 
+Unit tests:
+
 ```bash
 cmake -P test/test.cmake
 ```
 
-As well as [lc3-test-suite](https://github.com/lc3-test-suite)
+Full [lc3-test-suite](https://github.com/lc3-test-suite) via the runner:
+
+```bash
+./runner.py "cmake -P lc3.cmake %s" -q
+```
