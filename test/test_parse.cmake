@@ -194,3 +194,8 @@ test_assert_equal("${is_label}" "FALSE" "is label instruction")
 
 asm_is_label(".ORIG" is_label)
 test_assert_equal("${is_label}" "FALSE" "is label directive")
+
+# asm_check_directive
+
+lc3_tokenize(".FILL" token)
+asm_check_directive(token is_directive)
