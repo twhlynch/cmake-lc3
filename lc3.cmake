@@ -21,4 +21,4 @@ endif()
 
 # assemble and run
 lc3_asm_assemble("${input}")
-lc3_vm_run(${ASM_PC})
+# lc3_vm_run(${ASM_PC})

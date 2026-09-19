@@ -18,7 +18,12 @@ endmacro()
 	Reads the file, runs both passes, and populates MEM_<addr> variables.
 ]]
 macro(lc3_asm_assemble filename)
-	# read source
+	# read source into clean code lines
 	asm_read_source("${filename}" source_lines)
-	# TODO: assemble
+
+	# tokenize lines and detect labels
+	foreach(raw_line IN LISTS source_lines)
+		lc3_tokenize("${raw_line}" tokens)
+		asm_detect_label(tokens has_label label_name)
+	endforeach()
 endmacro()
