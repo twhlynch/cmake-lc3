@@ -56,3 +56,92 @@ macro(asm_is_blank_line line result)
 		set(${result} 0)
 	endif()
 endmacro()
+
+#[[
+	Check if a character is whitespace or optional separator syntax.
+]]
+macro(asm_token_whitespace char result)
+	set_bool(${result} "${char}" STREQUAL " " OR "${char}" STREQUAL "," OR "${char}" STREQUAL ":")
+endmacro()
+
+#[[
+	Split a line of assembly into a list of tokens.
+]]
+macro(lc3_tokenize line result)
+	set(${result} "")
+	string(LENGTH "${line}" line_len)
+	set(index 0)
+
+	while(index LESS line_len)
+		# skip whitespace and optional characters
+		while(index LESS line_len)
+			# read char
+			string(SUBSTRING "${line}" ${index} 1 current_char)
+
+			# break once at real char
+			asm_token_whitespace("${current_char}" ignore_token)
+			if(NOT ignore_token)
+				break()
+			endif()
+
+			lc3_increment(index)
+		endwhile()
+
+		# exit at EOL
+		if(index EQUAL line_len)
+			break()
+		endif()
+
+		# read the next token
+		string(SUBSTRING "${line}" ${index} 1 current_char)
+
+		# are we in a string
+		if(current_char STREQUAL "\"")
+			set(current_token "\"")
+			lc3_increment(index)
+
+			# read until closing quote
+			while(index LESS line_len)
+				# read next character
+				string(SUBSTRING "${line}" ${index} 1 next_char)
+
+				# break on closing quote
+				if(next_char STREQUAL "\"")
+					string(APPEND current_token "\"")
+					lc3_increment(index)
+					break()
+				endif()
+
+				# append char to token
+				string(APPEND current_token "${next_char}")
+
+				lc3_increment(index)
+			endwhile()
+
+			# save token
+			list(APPEND ${result} "${current_token}")
+		else()
+			set(current_token "")
+
+			# read until end of token or line
+			while(index LESS line_len)
+				# read next character
+				string(SUBSTRING "${line}" ${index} 1 next_char)
+
+				# break if end of token
+				asm_token_whitespace("${next_char}" ignore_token)
+				if(ignore_token)
+					break()
+				endif()
+
+				# append char to token
+				string(APPEND current_token "${next_char}")
+
+				lc3_increment(index)
+			endwhile()
+
+			# save token
+			list(APPEND ${result} "${current_token}")
+		endif()
+	endwhile()
+endmacro()
