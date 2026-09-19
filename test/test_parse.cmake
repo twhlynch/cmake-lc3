@@ -199,3 +199,38 @@ test_assert_equal("${is_label}" "FALSE" "is label directive")
 
 lc3_tokenize(".FILL" token)
 asm_check_directive(token is_directive)
+
+# asm_detect_label
+
+lc3_tokenize("Loop not r0 r1" tokens)
+asm_detect_label(tokens has_label label_name)
+test_assert_equal("${has_label}" "TRUE" "detect label")
+test_assert_equal("${label_name}" "Loop" "detect label name")
+
+lc3_tokenize("not r0 r1" tokens)
+asm_detect_label(tokens has_label label_name)
+test_assert_equal("${has_label}" "FALSE" "detect no label")
+
+lc3_tokenize(".ORIG x3000" tokens)
+asm_detect_label(tokens has_label label_name)
+test_assert_equal("${has_label}" "FALSE" "detect no label directive")
+
+lc3_tokenize("Loop" tokens)
+asm_detect_label(tokens has_label label_name)
+test_assert_equal("${has_label}" "TRUE" "detect just label")
+
+lc3_tokenize("Loop: not r0 r1" tokens)
+asm_detect_label(tokens has_label label_name)
+test_assert_equal("${label_name}" "Loop" "detect colon label")
+
+lc3_tokenize("123 not r0 r1" tokens)
+asm_detect_label(tokens has_label label_name)
+test_assert_equal("${has_label}" "FALSE" "detect not label number")
+
+lc3_tokenize("r0" tokens)
+asm_detect_label(tokens has_label label_name)
+test_assert_equal("${has_label}" "FALSE" "detect not label register")
+
+lc3_tokenize("add" tokens)
+asm_detect_label(tokens has_label label_name)
+test_assert_equal("${has_label}" "FALSE" "detect not label instruction")
