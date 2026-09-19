@@ -25,6 +25,8 @@ set(LC3_USER_MAX 65024) # xFE00
 
 #[[
 	Throws a FATAL_ERROR if the condition is not met.
+	NOTE: Vars should be bare local variable names to
+	avoid dereferencing their content as a variable name
 ]]
 macro(lc3_assert)
 	set(assert_args ${ARGV})

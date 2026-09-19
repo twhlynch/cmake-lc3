@@ -154,8 +154,9 @@ endmacro()
 ]]
 macro(lc3_num str result)
 	# validate with regex
+	set(num_str "${str}") # copy to local (see assert note)
 	lc3_assert(
-		"${str}" MATCHES
+		num_str MATCHES
 		"^(#?[+-]?[0-9]+|[+-]?0?x[0-9a-fA-F]+)$"
 		"Invalid number: ${str}"
 	)
