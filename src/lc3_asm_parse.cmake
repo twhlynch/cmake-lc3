@@ -300,3 +300,52 @@ macro(asm_detect_label tokens has_label label_name)
 		set(${label_name} "${first_token}")
 	endif()
 endmacro()
+
+#[[
+	Look up a label name in a label list.
+	Labels are stored as "NAME:ADDRESS".
+]]
+macro(asm_find_label label labels found address)
+	set(${found} FALSE)
+	set(${address} FALSE)
+
+	# scan labels
+	foreach(entry ${labels})
+		# get name
+		string(FIND "${entry}:" ":" colon_pos)
+		string(SUBSTRING "${entry}" 0 ${colon_pos} entry_name)
+
+		if(entry_name STREQUAL "${label}")
+			# get address
+			math(EXPR entry_offset "${colon_pos} + 1")
+			string(SUBSTRING "${entry}" ${entry_offset} -1 entry_addr)
+
+			# set results
+			set(${address} "${entry_addr}")
+			set(${found} TRUE)
+			break()
+		endif()
+	endforeach()
+endmacro()
+
+#[[
+	Register a label at an address in the label list.
+]]
+macro(asm_register_label labels label addr)
+	# check for duplicate
+	foreach(entry ${${labels}})
+		# get name
+		string(FIND "${entry}:" ":" colon_pos)
+		string(SUBSTRING "${entry}" 0 ${colon_pos} entry_name)
+
+		set(label_str "${label}") # copy to local (see assert note)
+		lc3_assert(NOT entry_name STREQUAL label_str "Duplicate label: ${label}")
+	endforeach()
+
+	# validate label
+	asm_is_label("${label}" is_label)
+	lc3_assert(is_label "Invalid label: ${label}")
+
+	# add to list
+	list(APPEND ${labels} "${label}:${addr}")
+endmacro()
