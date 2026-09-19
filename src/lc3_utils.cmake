@@ -236,6 +236,11 @@ macro(lc3_sign_extend val bits result)
 	math(EXPR ${result} "${se_val} & ${LC3_WORD_MASK}")
 endmacro()
 
+#[[
+	Set result to TRUE or FALSE based on a condition.
+	NOTE: Vars should be bare local variable names to
+	avoid dereferencing their content as a variable name
+]]
 macro(set_bool result)
 	if(${ARGN})
 		set(${result} TRUE)

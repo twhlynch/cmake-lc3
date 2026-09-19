@@ -61,7 +61,11 @@ endmacro()
 	Check if a character is whitespace or optional separator syntax.
 ]]
 macro(asm_token_whitespace char result)
-	set_bool(${result} "${char}" STREQUAL " " OR "${char}" STREQUAL "," OR "${char}" STREQUAL ":")
+	if("${char}" STREQUAL " " OR "${char}" STREQUAL "," OR "${char}" STREQUAL ":")
+		set(${result} TRUE)
+	else()
+		set(${result} FALSE)
+	endif()
 endmacro()
 
 #[[
