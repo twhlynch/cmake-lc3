@@ -271,3 +271,14 @@ macro(asm_is_label name result)
 		set(${result} FALSE)
 	endif()
 endmacro()
+
+#[[
+	Error if the token is an unknown directive.
+]]
+macro(asm_check_directive token)
+	asm_is_directive("${token}" known_dir)
+	# not a directive but starts with "."
+	if("${token}" MATCHES "^\\." AND NOT known_dir)
+		message(FATAL_ERROR "Invalid directive: ${token}")
+	endif()
+endmacro()
