@@ -104,7 +104,106 @@ endmacro()
 	Encode instructions into machine code.
 ]]
 macro(asm_pass2 source_lines_var labels_var)
-	# TODO: encoding pass
+	set(addr 0)
+	set(origin 0)
+
+	foreach(raw_line IN LISTS ${source_lines_var})
+		# tokenize line and detect label
+		lc3_tokenize("${raw_line}" tokens)
+		asm_detect_label(tokens has_label label_name)
+
+		# find opcode after any label
+		set(opcode_index 0)
+		if(has_label)
+			set(opcode_index 1)
+		endif()
+
+		# check for a token
+		list(LENGTH tokens token_count)
+		if(opcode_index GREATER_EQUAL token_count)
+			continue()
+		endif()
+
+		# get the first token
+		list(GET tokens ${opcode_index} opcode)
+		string(TOUPPER "${opcode}" opcode_upper)
+
+		# assembler directives
+		if(opcode_upper STREQUAL ".ORIG")
+			# set address to orig value
+			math(EXPR index "${opcode_index} + 1")
+			list(GET tokens ${index} orig_value)
+			lc3_num("${orig_value}" addr)
+			set(origin ${addr})
+
+			# orig must be in user space
+			lc3_check_privileged(${addr})
+		elseif(opcode_upper STREQUAL ".END")
+			# stop parsing
+			break()
+		elseif(opcode_upper STREQUAL ".FILL")
+			# get fill value
+			math(EXPR index "${opcode_index} + 1")
+			list(GET tokens ${index} fill_value)
+
+			# resolve label or number
+			asm_find_label("${fill_value}" "${labels}" label_found label_addr)
+			if(label_found)
+				# label address
+				set(word ${label_addr})
+			else()
+				# value
+				lc3_num("${fill_value}" word)
+			endif()
+
+			# store word
+			lc3_mask(${word} ${LC3_WORD_MASK} word)
+			asm_write_word(addr ${word})
+		elseif(opcode_upper STREQUAL ".BLKW")
+			# get blkw value
+			math(EXPR index "${opcode_index} + 1")
+			list(GET tokens ${index} count_value)
+			lc3_num("${count_value}" count_num)
+
+			# write count zero words
+			set(blkw_remaining ${count_num})
+			while(blkw_remaining GREATER 0)
+				asm_write_word(addr 0)
+				lc3_decrement(blkw_remaining)
+			endwhile()
+		elseif(opcode_upper STREQUAL ".STRINGZ")
+			# each char + null terminator is one word
+			math(EXPR index "${opcode_index} + 1")
+			list(GET tokens ${index} string_value)
+
+			# get string without quotes
+			string(LENGTH "${string_value}" str_len)
+			math(EXPR inner_len "${str_len} - 2")
+			string(SUBSTRING "${string_value}" 1 ${inner_len} str_chars)
+			string(LENGTH "${str_chars}" char_count)
+
+			# write each char
+			set(char_index 0)
+			while(char_index LESS char_count)
+				string(SUBSTRING "${str_chars}" ${char_index} 1 current_char)
+				lc3_ord("${current_char}" char_ordinal)
+				asm_write_word(addr ${char_ordinal})
+				lc3_increment(char_index)
+			endwhile()
+
+			# write null terminator
+			asm_write_word(addr 0)
+		else()
+			# invalid directives fail
+			asm_check_directive("${opcode_upper}")
+
+			# TODO: instructions
+			message(FATAL_ERROR "TODO: encode ${opcode_upper}")
+		endif()
+	endforeach()
+
+	set(ASM_ORIGIN ${origin})
+	set(ASM_PC ${origin})
 endmacro()
 
 #[[
@@ -117,4 +216,7 @@ macro(lc3_asm_assemble filename)
 
 	# collect labels and compute addresses
 	asm_pass1(source_lines labels)
+
+	# encode instructions into machine code
+	asm_pass2(source_lines labels)
 endmacro()

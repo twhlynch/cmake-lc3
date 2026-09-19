@@ -1,4 +1,20 @@
 #[[
+	Write an encoded word to memory and advance the address counter.
+]]
+macro(asm_write_word addr_var word)
+	# check privilege
+	lc3_check_privileged(${${addr_var}})
+
+	# store word in memory
+	set(MEM_${${addr_var}} ${word})
+
+	# advance address
+	lc3_increment(${addr_var})
+endmacro()
+
+# MARK: per instruction encoding
+
+#[[
 	Encode a BR instruction with the given condition bits base value.
 ]]
 macro(asm_encode_branch base_value)
