@@ -141,7 +141,9 @@ macro(lc3_tokenize line result)
 			endwhile()
 
 			# save token
-			list(APPEND ${result} "${current_token}")
+			if(NOT current_token STREQUAL "")
+				list(APPEND ${result} "${current_token}")
+			endif()
 		endif()
 	endwhile()
 endmacro()
