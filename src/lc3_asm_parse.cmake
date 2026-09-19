@@ -1,3 +1,12 @@
+# regex patterns
+set(LC3_NUM_PATTERN "^(#?[+-]?[0-9]+|[+-]?0?x[0-9a-fA-F]+)$")
+set(LC3_REG_PATTERN "^[Rr][0-7]$")
+set(
+	LC3_INSTRUCTION_PATTERN
+	"^(ADD|AND|BR|BRN|BRZ|BRP|BRNZ|BRNP|BRZP|BRNZP|JMP|JSR|JSRR|LD|LDI|LDR|LEA|NOT|ST|STI|STR|TRAP|RTI|HALT|RET|PUTS|PUTSP|GETC|OUT|IN|PUTN|REG)$"
+)
+set(LC3_DIRECTIVE_PATTERN "^\\.(ORIG|END|FILL|BLKW|STRINGZ)$")
+
 #[[
 	Read a source file into a clean list of code lines.
 	Removes comments, trims, and drops blanks.
@@ -161,7 +170,7 @@ macro(lc3_num str result)
 	set(num_str "${str}") # copy to local (see assert note)
 	lc3_assert(
 		num_str MATCHES
-		"^(#?[+-]?[0-9]+|[+-]?0?x[0-9a-fA-F]+)$"
+		"${LC3_NUM_PATTERN}"
 		"Invalid number: ${str}"
 	)
 
@@ -183,7 +192,7 @@ macro(lc3_reg str result)
 	string(TOUPPER "${str}" upper_reg)
 
 	# must match R0-R7
-	lc3_assert(upper_reg MATCHES "^R[0-7]$" "Invalid register: ${str}")
+	lc3_assert(upper_reg MATCHES "${LC3_REG_PATTERN}" "Invalid register: ${str}")
 
 	# return the digit
 	string(SUBSTRING "${upper_reg}" 1 1 ${result})
@@ -200,7 +209,7 @@ macro(asm_is_instruction name result)
 	set_bool(
 		${result}
 		upper_name MATCHES
-		"^(ADD|AND|BR|BRN|BRZ|BRP|BRNZ|BRNP|BRZP|BRNZP|JMP|JSR|JSRR|LD|LDI|LDR|LEA|NOT|ST|STI|STR|TRAP|RTI|HALT|RET|PUTS|PUTSP|GETC|OUT|IN|PUTN|REG)$"
+		"${LC3_INSTRUCTION_PATTERN}"
 	)
 endmacro()
 
@@ -215,6 +224,6 @@ macro(asm_is_directive name result)
 	set_bool(
 		${result}
 		upper_name MATCHES
-		"^\\.(ORIG|END|FILL|BLKW|STRINGZ)$"
+		"${LC3_DIRECTIVE_PATTERN}"
 	)
 endmacro()
