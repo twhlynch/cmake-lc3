@@ -234,3 +234,24 @@ test_assert_equal("${has_label}" "FALSE" "detect not label register")
 lc3_tokenize("add" tokens)
 asm_detect_label(tokens has_label label_name)
 test_assert_equal("${has_label}" "FALSE" "detect not label instruction")
+
+# asm_find_label
+
+asm_find_label("LOOP" "LOOP:4096;END:4100" found address)
+test_assert_equal("${found}" "TRUE" "find label")
+test_assert_equal("${address}" "4096" "find label address")
+
+asm_find_label("loop" "LOOP:4096;END:4100" found address)
+test_assert_equal("${found}" "FALSE" "find label case sensitive")
+
+asm_find_label("MISSING" "LOOP:4096;END:4100" found address)
+test_assert_equal("${found}" "FALSE" "find label missing")
+
+# asm_register_label
+
+set(labels "")
+asm_register_label(labels "A" 1)
+test_assert_equal("${labels}" "A:1" "register label")
+
+asm_register_label(labels "B" 2)
+test_assert_equal("${labels}" "A:1;B:2" "register second label")
