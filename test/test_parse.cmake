@@ -32,3 +32,26 @@ test_assert_equal("${blank}" "1" "blank empty")
 
 asm_is_blank_line("ADD R0 R1 R2" blank)
 test_assert_equal("${blank}" "0" "blank code")
+
+# tokenize
+
+lc3_tokenize("ADD R0 R1 R2" tokens)
+test_assert_equal("${tokens}" "ADD;R0;R1;R2" "tokenize spaces")
+
+lc3_tokenize("ADD R0,R1,R2" tokens)
+test_assert_equal("${tokens}" "ADD;R0;R1;R2" "tokenize commas")
+
+lc3_tokenize("LD   R0,label" tokens)
+test_assert_equal("${tokens}" "LD;R0;label" "tokenize mixed whitespace")
+
+lc3_tokenize("Label: HALT" tokens)
+test_assert_equal("${tokens}" "Label;HALT" "Label colon")
+
+lc3_tokenize(".STRINGZ \"hello world\"" tokens)
+test_assert_equal("${tokens}" ".STRINGZ;\"hello world\"" "tokenize quoted string")
+
+lc3_tokenize(".STRINGZ \"a,b\"" tokens)
+test_assert_equal("${tokens}" ".STRINGZ;\"a,b\"" "tokenize comma in string")
+
+lc3_tokenize("NOT R1 R1," tokens)
+test_assert_equal("${tokens}" "NOT;R1;R1" "no empty token")
