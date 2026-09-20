@@ -73,7 +73,23 @@ endmacro()
 	Encode a BR instruction with the given condition bits base value.
 ]]
 macro(asm_encode_branch tokens opcode_index addr_var labels)
-	# TODO: encode branch
+	# read label
+	asm_operand("${tokens}" "${opcode_index}" 1 br_label)
+
+	# look up condition bits for this BR variant
+	asm_operand("${tokens}" "${opcode_index}" 0 br_name)
+	string(TOUPPER "${br_name}" br_upper)
+	list(FIND ASM_BR_NAMES "${br_upper}" br_idx)
+	list(GET ASM_BR_BASES ${br_idx} br_base)
+
+	# resolve label to pcoffset9
+	asm_resolve_pc_offset("${br_label}" "${labels}" "${addr}" 9 br_offset)
+
+	# build and store word
+	lc3_mask(${br_offset} 0x1FF br_offset)
+	math(EXPR br_word "${br_base} | ${br_offset}")
+	lc3_mask(${br_word} ${LC3_WORD_MASK} br_word)
+	asm_write_word(${addr_var} ${br_word})
 endmacro()
 
 #[[
