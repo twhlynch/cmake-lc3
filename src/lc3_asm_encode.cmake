@@ -60,10 +60,6 @@ macro(
 	asm_operand("${tokens}" "${opcode_index}" 2 src1_str)
 	asm_operand("${tokens}" "${opcode_index}" 3 src2_or_imm)
 
-	# resolve base from opcode
-	asm_operand("${tokens}" "${opcode_index}" 0 add_name)
-	string(TOUPPER "${add_name}" add_upper)
-
 	# read DR and SR1
 	lc3_reg("${dest_str}" dest_reg)
 	lc3_reg("${src1_str}" src1_reg)
@@ -113,10 +109,6 @@ macro(
 	asm_operand("${tokens}" "${opcode_index}" 1 reg_a_str)
 	asm_operand("${tokens}" "${opcode_index}" 2 reg_b_str)
 	asm_operand("${tokens}" "${opcode_index}" 3 offset_str)
-
-	# resolve base from opcode
-	asm_operand("${tokens}" "${opcode_index}" 0 base_name)
-	string(TOUPPER "${base_name}" base_upper)
 
 	# read regs
 	lc3_reg("${reg_a_str}" reg_a)
@@ -244,10 +236,6 @@ macro(asm_encode_jmp tokens opcode_index addr_var labels)
 	asm_operand("${tokens}" "${opcode_index}" 1 base_str)
 	lc3_reg("${base_str}" base_reg)
 
-	# resolve base from opcode
-	asm_operand("${tokens}" "${opcode_index}" 0 jump_name)
-	string(TOUPPER "${jump_name}" jump_upper)
-
 	# build and store word
 	math(EXPR encoded_word "0xC000 | (${base_reg} << 6)")
 	asm_write_word(${addr_var} ${encoded_word})
@@ -278,10 +266,6 @@ macro(asm_encode_jsrr tokens opcode_index addr_var labels)
 	# read BR
 	asm_operand("${tokens}" "${opcode_index}" 1 base_str)
 	lc3_reg("${base_str}" base_reg)
-
-	# resolve base from opcode
-	asm_operand("${tokens}" "${opcode_index}" 0 jump_name)
-	string(TOUPPER "${jump_name}" jump_upper)
 
 	# build and store word
 	math(EXPR encoded_word "0x4000 | (${base_reg} << 6)")
