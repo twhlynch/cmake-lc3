@@ -271,6 +271,16 @@ endmacro()
 # MARK: assembly
 
 #[[
+	Append a value to a list as a single element, escaping ";" separators.
+]]
+macro(asm_list_append list_var value)
+	# escape backslashes first, then separators
+	string(REPLACE "\\" "\\\\" escaped "${value}")
+	string(REPLACE ";" "\\;" escaped "${escaped}")
+	list(APPEND ${list_var} "${escaped}")
+endmacro()
+
+#[[
 	Fetch the nth operand token after the opcode.
 ]]
 macro(asm_operand tokens opcode_index n result)

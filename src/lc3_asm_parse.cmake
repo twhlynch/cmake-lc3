@@ -28,7 +28,7 @@ macro(asm_read_source filename result)
 		asm_strip_line("${raw_line}" line)
 		asm_is_blank_line("${line}" blank)
 		if(NOT blank)
-			list(APPEND ${result} "${line}")
+			asm_list_append(${result} "${line}")
 		endif()
 	endforeach()
 endmacro()
@@ -133,7 +133,7 @@ macro(lc3_tokenize line result)
 			endwhile()
 
 			# save token
-			list(APPEND ${result} "${current_token}")
+			asm_list_append(${result} "${current_token}")
 		else()
 			set(current_token "")
 
@@ -156,7 +156,7 @@ macro(lc3_tokenize line result)
 
 			# save token
 			if(NOT current_token STREQUAL "")
-				list(APPEND ${result} "${current_token}")
+				asm_list_append(${result} "${current_token}")
 			endif()
 		endif()
 	endwhile()
