@@ -189,7 +189,7 @@ macro(asm_pass2 source_lines_var labels_var)
 			asm_write_word(addr 0)
 		else()
 			# invalid directives fail
-			asm_check_directive("${opcode_upper}")
+			asm_check_directive("${opcode}")
 
 			# pseudo-instructions
 			asm_encode_pseudo("${opcode_upper}" pseudo_done addr)
