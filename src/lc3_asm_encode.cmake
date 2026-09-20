@@ -23,6 +23,24 @@ set(
 set(ASM_BR_NAMES "BR;BRNZP;BRN;BRZ;BRP;BRNZ;BRNP;BRZP")
 set(ASM_BR_BASES "0x0E00;0x0E00;0x0800;0x0400;0x0200;0x0C00;0x0A00;0x0600")
 
+#[[
+	Encode a pseudo-instruction (TRAP alias or RET).
+]]
+macro(asm_encode_pseudo opcode handled addr_var)
+	set(${handled} FALSE)
+
+	# is it a pseudoop
+	list(FIND ASM_PSEUDO_NAMES "${opcode}" pseudo_idx)
+	if(NOT pseudo_idx EQUAL -1)
+		set(${handled} TRUE)
+
+		# get word value
+		list(GET ASM_PSEUDO_WORDS ${pseudo_idx} pseudo_word)
+
+		# write
+		asm_write_word(${addr_var} ${pseudo_word})
+	endif()
+endmacro()
 
 # MARK: per instruction encoding
 
