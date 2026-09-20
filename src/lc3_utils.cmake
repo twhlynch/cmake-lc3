@@ -273,3 +273,40 @@ macro(asm_operand tokens opcode_index n result)
 	set(operand_tokens "${tokens}")
 	list(GET operand_tokens ${operand_idx} ${result})
 endmacro()
+
+#[[
+	Validate that an immediate value fits in a signed N-bit field.
+]]
+macro(asm_check_imm value bits)
+	math(EXPR imm_max "(1 << (${bits} - 1)) - 1")
+	math(EXPR imm_min "-(1 << (${bits} - 1))")
+	lc3_assert(
+		${value} LESS_EQUAL ${imm_max} AND ${value} GREATER_EQUAL ${imm_min}
+		"Immediate value ${value} cannot be represented in ${bits} bits"
+	)
+endmacro()
+
+#[[
+	Look up a label and fatally error if not found.
+]]
+macro(asm_require_label label_name label_list found_addr)
+	asm_find_label("${label_name}" "${label_list}" found ${found_addr})
+	lc3_assert(found "Undefined label ${label_name}")
+endmacro()
+
+#[[
+	Resolve a label to a PC-relative offset.
+	label - addr - 1
+]]
+macro(
+	asm_resolve_pc_offset
+	label
+	labels
+	addr
+	bits
+	result
+)
+	asm_require_label("${label}" "${labels}" resolve_addr)
+	math(EXPR ${result} "${resolve_addr} - ${addr} - 1")
+	asm_check_imm("${${result}}" ${bits})
+endmacro()
