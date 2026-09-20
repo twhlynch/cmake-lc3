@@ -133,7 +133,17 @@ endmacro()
 	1100 000 BaseR 000000
 ]]
 macro(asm_encode_jmp tokens opcode_index addr_var labels)
-	# TODO: encode jmp
+	# read BR
+	asm_operand("${tokens}" "${opcode_index}" 1 base_str)
+	lc3_reg("${base_str}" base_reg)
+
+	# resolve base from opcode
+	asm_operand("${tokens}" "${opcode_index}" 0 jump_name)
+	string(TOUPPER "${jump_name}" jump_upper)
+
+	# build and store word
+	math(EXPR encoded_word "0xC000 | (${base_reg} << 6)")
+	asm_write_word(${addr_var} ${encoded_word})
 endmacro()
 
 #[[
@@ -141,7 +151,16 @@ endmacro()
 	0100 1 PCoffset11
 ]]
 macro(asm_encode_jsr tokens opcode_index addr_var labels)
-	# TODO: encode jsr
+	# read label
+	asm_operand("${tokens}" "${opcode_index}" 1 jump_label)
+
+	# resolve label to pcoffset11
+	asm_resolve_pc_offset("${jump_label}" "${labels}" "${addr}" 11 branch_offset)
+
+	# build and store word
+	lc3_mask(${branch_offset} 0x7FF branch_offset)
+	math(EXPR encoded_word "0x4800 | ${branch_offset}")
+	asm_write_word(${addr_var} ${encoded_word})
 endmacro()
 
 #[[
@@ -149,7 +168,17 @@ endmacro()
 	0100 0 00 BaseR 000000
 ]]
 macro(asm_encode_jsrr tokens opcode_index addr_var labels)
-	# TODO: encode jsrr
+	# read BR
+	asm_operand("${tokens}" "${opcode_index}" 1 base_str)
+	lc3_reg("${base_str}" base_reg)
+
+	# resolve base from opcode
+	asm_operand("${tokens}" "${opcode_index}" 0 jump_name)
+	string(TOUPPER "${jump_name}" jump_upper)
+
+	# build and store word
+	math(EXPR encoded_word "0x4000 | (${base_reg} << 6)")
+	asm_write_word(${addr_var} ${encoded_word})
 endmacro()
 
 #[[
