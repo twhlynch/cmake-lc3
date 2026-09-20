@@ -262,3 +262,14 @@ macro(lc3_check_privileged addr)
 		"Access Control Violation at ${check_hex}"
 	)
 endmacro()
+
+# MARK: assembly
+
+#[[
+	Fetch the nth operand token after the opcode.
+]]
+macro(asm_operand tokens opcode_index n result)
+	math(EXPR operand_idx "${opcode_index} + ${n}")
+	set(operand_tokens "${tokens}")
+	list(GET operand_tokens ${operand_idx} ${result})
+endmacro()

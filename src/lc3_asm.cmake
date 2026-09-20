@@ -45,8 +45,7 @@ macro(asm_pass1 source_lines_var labels_out)
 			set(orig_found TRUE)
 
 			# set address to orig value
-			math(EXPR index "${opcode_index} + 1")
-			list(GET tokens ${index} orig_value)
+			asm_operand("${tokens}" "${opcode_index}" 1 orig_value)
 			lc3_num("${orig_value}" addr)
 			lc3_assert(addr GREATER_EQUAL 0 ".ORIG cannot be negative")
 
@@ -60,8 +59,7 @@ macro(asm_pass1 source_lines_var labels_out)
 			lc3_increment(addr)
 		elseif(opcode_upper STREQUAL ".BLKW")
 			# get blkw value
-			math(EXPR index "${opcode_index} + 1")
-			list(GET tokens ${index} count_value)
+			asm_operand("${tokens}" "${opcode_index}" 1 count_value)
 			lc3_num("${count_value}" count_num)
 			lc3_assert(count_num GREATER_EQUAL 0 ".BLKW cannot be negative")
 
@@ -71,8 +69,7 @@ macro(asm_pass1 source_lines_var labels_out)
 			set(addr ${new_addr})
 		elseif(opcode_upper STREQUAL ".STRINGZ")
 			# each char + null terminator is one word
-			math(EXPR index "${opcode_index} + 1")
-			list(GET tokens ${index} string_value)
+			asm_operand("${tokens}" "${opcode_index}" 1 string_value)
 
 			# get string size - quotes + null
 			string(LENGTH "${string_value}" str_len)
@@ -131,8 +128,7 @@ macro(asm_pass2 source_lines_var labels_var)
 		# assembler directives
 		if(opcode_upper STREQUAL ".ORIG")
 			# set address to orig value
-			math(EXPR index "${opcode_index} + 1")
-			list(GET tokens ${index} orig_value)
+			asm_operand("${tokens}" "${opcode_index}" 1 orig_value)
 			lc3_num("${orig_value}" addr)
 			set(origin ${addr})
 
@@ -143,8 +139,7 @@ macro(asm_pass2 source_lines_var labels_var)
 			break()
 		elseif(opcode_upper STREQUAL ".FILL")
 			# get fill value
-			math(EXPR index "${opcode_index} + 1")
-			list(GET tokens ${index} fill_value)
+			asm_operand("${tokens}" "${opcode_index}" 1 fill_value)
 
 			# resolve label or number
 			asm_find_label("${fill_value}" "${labels}" label_found label_addr)
@@ -161,8 +156,7 @@ macro(asm_pass2 source_lines_var labels_var)
 			asm_write_word(addr ${word})
 		elseif(opcode_upper STREQUAL ".BLKW")
 			# get blkw value
-			math(EXPR index "${opcode_index} + 1")
-			list(GET tokens ${index} count_value)
+			asm_operand("${tokens}" "${opcode_index}" 1 count_value)
 			lc3_num("${count_value}" count_num)
 
 			# write count zero words
@@ -173,8 +167,7 @@ macro(asm_pass2 source_lines_var labels_var)
 			endwhile()
 		elseif(opcode_upper STREQUAL ".STRINGZ")
 			# each char + null terminator is one word
-			math(EXPR index "${opcode_index} + 1")
-			list(GET tokens ${index} string_value)
+			asm_operand("${tokens}" "${opcode_index}" 1 string_value)
 
 			# get string without quotes
 			string(LENGTH "${string_value}" str_len)
@@ -197,8 +190,45 @@ macro(asm_pass2 source_lines_var labels_var)
 			# invalid directives fail
 			asm_check_directive("${opcode_upper}")
 
-			# TODO: instructions
-			message(FATAL_ERROR "TODO: encode ${opcode_upper}")
+			# pseudo-instructions
+			asm_encode_pseudo("${opcode_upper}" pseudo_done addr)
+			if(pseudo_done)
+				# already emitted
+			elseif(opcode_upper STREQUAL "ADD")
+				asm_encode_add("${tokens}" "${opcode_index}" addr "${labels}")
+			elseif(opcode_upper STREQUAL "AND")
+				asm_encode_and("${tokens}" "${opcode_index}" addr "${labels}")
+			elseif(opcode_upper STREQUAL "NOT")
+				asm_encode_not("${tokens}" "${opcode_index}" addr "${labels}")
+			elseif(opcode_upper IN_LIST ASM_BR_NAMES)
+				asm_encode_branch("${tokens}" "${opcode_index}" addr "${labels}")
+			elseif(opcode_upper STREQUAL "JMP")
+				asm_encode_jmp("${tokens}" "${opcode_index}" addr "${labels}")
+			elseif(opcode_upper STREQUAL "JSR")
+				asm_encode_jsr("${tokens}" "${opcode_index}" addr "${labels}")
+			elseif(opcode_upper STREQUAL "JSRR")
+				asm_encode_jsrr("${tokens}" "${opcode_index}" addr "${labels}")
+			elseif(opcode_upper STREQUAL "LD")
+				asm_encode_ld("${tokens}" "${opcode_index}" addr "${labels}")
+			elseif(opcode_upper STREQUAL "LDI")
+				asm_encode_ldi("${tokens}" "${opcode_index}" addr "${labels}")
+			elseif(opcode_upper STREQUAL "LDR")
+				asm_encode_ldr("${tokens}" "${opcode_index}" addr "${labels}")
+			elseif(opcode_upper STREQUAL "LEA")
+				asm_encode_lea("${tokens}" "${opcode_index}" addr "${labels}")
+			elseif(opcode_upper STREQUAL "ST")
+				asm_encode_st("${tokens}" "${opcode_index}" addr "${labels}")
+			elseif(opcode_upper STREQUAL "STI")
+				asm_encode_sti("${tokens}" "${opcode_index}" addr "${labels}")
+			elseif(opcode_upper STREQUAL "STR")
+				asm_encode_str("${tokens}" "${opcode_index}" addr "${labels}")
+			elseif(opcode_upper STREQUAL "TRAP")
+				asm_encode_trap("${tokens}" "${opcode_index}" addr "${labels}")
+			elseif(opcode_upper STREQUAL "RTI")
+				asm_encode_rti("${tokens}" "${opcode_index}" addr "${labels}")
+			else()
+				message(FATAL_ERROR "Unknown instruction: ${opcode_upper}")
+			endif()
 		endif()
 	endforeach()
 
