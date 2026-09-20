@@ -195,5 +195,5 @@ endmacro()
 	1000 000000000000
 ]]
 macro(asm_encode_rti tokens opcode_index addr_var labels)
-	# TODO: encode rti (maybe)
+	asm_write_word(${addr_var} 0x8000)
 endmacro()
