@@ -187,7 +187,20 @@ endmacro()
 	1111 0000 vector8
 ]]
 macro(asm_encode_trap tokens opcode_index addr_var labels)
-	# TODO: encode trap
+	# read vector
+	asm_operand("${tokens}" "${opcode_index}" 1 trap_vector)
+
+	# resolve and check vector8
+	lc3_num("${trap_vector}" trap_num)
+	lc3_assert(
+		${trap_num} GREATER_EQUAL 0 AND ${trap_num} LESS_EQUAL ${LC3_TRAP_MAX}
+		"TRAP vector ${trap_num} out of range"
+	)
+
+	# build and store word
+	lc3_mask(${trap_num} ${LC3_BYTE_MASK} trap_num)
+	math(EXPR encoded_word "0xF000 | ${trap_num}")
+	asm_write_word(${addr_var} ${encoded_word})
 endmacro()
 
 #[[
