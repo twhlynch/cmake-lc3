@@ -163,8 +163,5 @@ macro(lc3_vm_run start_pc)
 	# run
 	while(NOT VM_HALT)
 		lc3_vm_step()
-		if(VM_HALT)
-			break()
-		endif()
 	endwhile()
 endmacro()
