@@ -71,6 +71,10 @@ macro(asm_pass1 source_lines_var labels_out)
 			# each char + null terminator is one word
 			asm_operand("${tokens}" "${opcode_index}" 1 string_value)
 
+			set(string_value_check "${string_value}") # copy to local (see assert note)
+			# strings must be quoted
+			lc3_assert(string_value_check MATCHES "^\".*\"$" ".STRINGZ requires a quoted string")
+
 			# get string size - quotes + null
 			string(LENGTH "${string_value}" str_len)
 			math(EXPR str_len "${str_len} - 2 + 1")
