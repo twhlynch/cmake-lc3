@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.29)
 
 #[[
 	Global state:
@@ -27,7 +27,7 @@ set(input "${CMAKE_ARGV3}")
 
 if("${input}" STREQUAL "")
 	lc3_print("Usage: cmake -P lc3.cmake example.asm\n")
-	message(FATAL_ERROR "No input file provided")
+	lc3_fatal("No input file provided")
 endif()
 
 # assemble and run

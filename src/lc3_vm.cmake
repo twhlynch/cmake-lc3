@@ -123,10 +123,7 @@ macro(lc3_vm_step)
 		lc3_hex(${instruction} instr_hex)
 		math(EXPR fault_pc "${PC} - 1")
 		lc3_hex(${fault_pc} pc_hex)
-		message(
-			FATAL_ERROR
-			"Unknown opcode: ${opcode} (${instr_hex}) at PC ${pc_hex}"
-		)
+		lc3_fatal("Unknown opcode: ${opcode} (${instr_hex}) at PC ${pc_hex}")
 	endif()
 endmacro()
 

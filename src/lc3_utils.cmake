@@ -22,7 +22,21 @@ set(LC3_MEMORY_SIZE 65536) # x10000
 set(LC3_USER_MIN 12288) # x3000
 set(LC3_USER_MAX 65024) # xFE00
 
+string(ASCII 27 LC3_ESC)
+
 # MARK: interactive
+
+#[[
+	Print a fatal error without a call stack and exit non-zero.
+]]
+macro(lc3_fatal msg)
+	if(DEFINED ENV{NO_COLOR} OR "$ENV{CLICOLOR}" STREQUAL "0")
+		message("Error: ${msg}")
+	else()
+		message("${LC3_ESC}[31mError${LC3_ESC}[90m:${LC3_ESC}[0m ${msg}")
+	endif()
+	cmake_language(EXIT 1)
+endmacro()
 
 #[[
 	Throws a FATAL_ERROR if the condition is not met.
@@ -34,7 +48,7 @@ macro(lc3_assert)
 	list(GET assert_args -1 assert_msg)
 	list(REMOVE_AT assert_args -1)
 	if(NOT (${assert_args}))
-		message(FATAL_ERROR "${assert_msg}")
+		lc3_fatal("${assert_msg}")
 	endif()
 endmacro()
 

@@ -13,6 +13,11 @@ set(LC3_DIRECTIVE_PATTERN "^\\.(ORIG|END|FILL|BLKW|STRINGZ)$")
 	Removes comments, trims, and drops blanks.
 ]]
 macro(asm_read_source filename result)
+	# fail cleanly if file doesnt exist
+	if(NOT EXISTS "${filename}")
+		lc3_fatal("Could not open file \"${filename}\"")
+	endif()
+
 	# read file
 	file(READ "${filename}" read_content)
 
@@ -342,7 +347,7 @@ macro(asm_check_directive token)
 	asm_is_directive("${token}" known_dir)
 	# not a directive but starts with "."
 	if("${token}" MATCHES "^\\." AND NOT known_dir)
-		message(FATAL_ERROR "Invalid directive: ${token}")
+		lc3_fatal("Invalid directive: ${token}")
 	endif()
 endmacro()
 

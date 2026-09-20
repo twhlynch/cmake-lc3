@@ -1,6 +1,6 @@
 # cmake -P test/test.cmake
 
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.29)
 
 get_filename_component(REPO_ROOT "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
 
@@ -17,10 +17,7 @@ include(${REPO_ROOT}/src/lc3_vm_traps.cmake)
 ]]
 macro(test_assert_equal actual expected message)
 	if(NOT "${actual}" STREQUAL "${expected}")
-		message(
-			FATAL_ERROR
-			"FAIL: ${message} (expected '${expected}', got '${actual}')"
-		)
+		lc3_fatal("FAIL: ${message} (expected '${expected}', got '${actual}')")
 	else()
 		message(STATUS "PASS: ${message}")
 	endif()
