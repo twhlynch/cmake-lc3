@@ -4,6 +4,18 @@ set(content "ADD R0 R1 R2 ; comment")
 asm_strip_comments(content)
 test_assert_equal("${content}" "ADD R0 R1 R2 " "strip comments")
 
+set(content ".STRINGZ \"a;b\" ; comment")
+asm_strip_comments(content)
+test_assert_equal("${content}" ".STRINGZ \"a;b\" " "strip keeps semi and removes comment")
+
+set(content "; full line comment")
+asm_strip_comments(content)
+test_assert_equal("${content}" "" "strip full line comment")
+
+set(content ".STRINGZ \"a;b\"")
+asm_strip_comments(content)
+test_assert_equal("${content}" ".STRINGZ \"a;b\"" "strip keeps string with semi")
+
 # asm_split_lines
 
 set(content "a\nb\nc")
@@ -13,6 +25,13 @@ test_assert_equal("${lines}" "a;b;c" "split lines")
 set(content "a\r\nb")
 asm_split_lines(content lines)
 test_assert_equal("${lines}" "a;b" "split CRLF lines")
+
+set(content ".STRINGZ \"a;b\"\nHALT")
+asm_split_lines(content lines)
+list(LENGTH lines line_count)
+test_assert_equal("${line_count}" "2" "stringz semi doesnt break line count")
+list(GET lines 0 first_line)
+test_assert_equal("${first_line}" ".STRINGZ \"a;b\"" "split keeps semicolon in string")
 
 # asm_strip_line
 
@@ -53,8 +72,28 @@ test_assert_equal("${tokens}" ".STRINGZ;\"hello world\"" "tokenize quoted string
 lc3_tokenize(".STRINGZ \"a,b\"" tokens)
 test_assert_equal("${tokens}" ".STRINGZ;\"a,b\"" "tokenize comma in string")
 
+lc3_tokenize(".STRINGZ \"a;b\"" tokens)
+list(LENGTH tokens token_count)
+test_assert_equal("${token_count}" "2" "tokenize semicolon string count")
+list(GET tokens 1 str_token)
+test_assert_equal("${str_token}" "\"a;b\"" "tokenize semicolon in string")
+
 lc3_tokenize("NOT R1 R1," tokens)
 test_assert_equal("${tokens}" "NOT;R1;R1" "no empty token")
+
+# asm_require_operands
+
+lc3_tokenize("ADD R0 R1 R2" tokens)
+asm_require_operands("${tokens}" "0" 3)
+test_assert_equal("${operand_count}" "3" "operand count add")
+
+lc3_tokenize("LOOP BR LOOP" tokens)
+asm_require_operands("${tokens}" "1" 1)
+test_assert_equal("${operand_count}" "1" "operand count label branch")
+
+lc3_tokenize("HALT" tokens)
+asm_require_operands("${tokens}" "0" 0)
+test_assert_equal("${operand_count}" "0" "operand count pseudo")
 
 # lc3_num
 
