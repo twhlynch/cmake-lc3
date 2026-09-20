@@ -45,6 +45,31 @@ endmacro()
 # MARK: per instruction encoding
 
 #[[
+	Encode a PC-relative load/store instruction (ld, ldi, lea, st, sti).
+]]
+macro(
+	asm_encode_pc_offset
+	tokens
+	opcode_index
+	addr_var
+	labels
+	base_value
+)
+	# read reg and label
+	asm_operand("${tokens}" "${opcode_index}" 1 apo_reg_str)
+	asm_operand("${tokens}" "${opcode_index}" 2 apo_label)
+
+	# resolve label to pcoffset9
+	asm_resolve_pc_offset("${apo_label}" "${labels}" "${addr}" 9 apo_offset)
+	lc3_reg("${apo_reg_str}" apo_reg)
+
+	# build and write word
+	lc3_mask(${apo_offset} 0x1FF apo_offset)
+	math(EXPR apo_word "${base_value} | (${apo_reg} << 9) | ${apo_offset}")
+	asm_write_word(${addr_var} ${apo_word})
+endmacro()
+
+#[[
 	Encode a BR instruction with the given condition bits base value.
 ]]
 macro(asm_encode_branch tokens opcode_index addr_var labels)
@@ -122,6 +147,7 @@ endmacro()
 	0010 DR1 PCoffset9
 ]]
 macro(asm_encode_ld tokens opcode_index addr_var labels)
+	asm_encode_pc_offset("${tokens}" "${opcode_index}" ${addr_var} "${labels}" 0x2000)
 endmacro()
 
 #[[
@@ -129,6 +155,7 @@ endmacro()
 	1010 DR1 PCoffset9
 ]]
 macro(asm_encode_ldi tokens opcode_index addr_var labels)
+	asm_encode_pc_offset("${tokens}" "${opcode_index}" ${addr_var} "${labels}" 0xA000)
 endmacro()
 
 #[[
@@ -136,6 +163,7 @@ endmacro()
 	1110 DR1 PCoffset9
 ]]
 macro(asm_encode_lea tokens opcode_index addr_var labels)
+	asm_encode_pc_offset("${tokens}" "${opcode_index}" ${addr_var} "${labels}" 0xE000)
 endmacro()
 
 #[[
@@ -143,6 +171,7 @@ endmacro()
 	0011 SR1 PCoffset9
 ]]
 macro(asm_encode_st tokens opcode_index addr_var labels)
+	asm_encode_pc_offset("${tokens}" "${opcode_index}" ${addr_var} "${labels}" 0x3000)
 endmacro()
 
 #[[
@@ -150,6 +179,7 @@ endmacro()
 	1011 SR1 PCoffset9
 ]]
 macro(asm_encode_sti tokens opcode_index addr_var labels)
+	asm_encode_pc_offset("${tokens}" "${opcode_index}" ${addr_var} "${labels}" 0xB000)
 endmacro()
 
 #[[
