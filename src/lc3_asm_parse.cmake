@@ -35,17 +35,80 @@ endmacro()
 
 #[[
 	Strip comments from a source string.
+	Strings do not span lines and ";" inside quotes is kept.
 ]]
 macro(asm_strip_comments content)
-	string(REGEX REPLACE ";[^\n]*" "" ${content} "${${content}}")
+	set(stripped "")
+	string(LENGTH "${${content}}" content_len)
+	set(index 0)
+	set(in_string FALSE)
+
+	while(index LESS content_len)
+		# read char
+		string(SUBSTRING "${${content}}" ${index} 1 current_char)
+
+		if(in_string)
+			# keep the char
+			string(APPEND stripped "${current_char}")
+			lc3_increment(index)
+
+			# strings end at the quote or newline
+			if(current_char STREQUAL "\"" OR current_char STREQUAL "\n")
+				set(in_string FALSE)
+			endif()
+		elseif(current_char STREQUAL "\"")
+			# enter string
+			set(in_string TRUE)
+			string(APPEND stripped "${current_char}")
+			lc3_increment(index)
+		elseif(current_char STREQUAL ";")
+			# skip to end of line
+			while(index LESS content_len)
+				string(SUBSTRING "${${content}}" ${index} 1 current_char)
+				if(current_char STREQUAL "\n")
+					break()
+				endif()
+				lc3_increment(index)
+			endwhile()
+		else()
+			# keep the char
+			string(APPEND stripped "${current_char}")
+			lc3_increment(index)
+		endif()
+	endwhile()
+
+	set(${content} "${stripped}")
 endmacro()
 
 #[[
 	Split a string into lines.
+	Each line is a single element so ";" inside a quoted
+	string is kept as data instead of splitting the list.
 ]]
 macro(asm_split_lines content result)
+	# normalise line endings
 	string(REGEX REPLACE "\r\n" "\n" ${content} "${${content}}")
-	string(REGEX REPLACE "\n" ";" ${result} "${${content}}")
+
+	# split on newlines
+	set(${result} "")
+	set(remaining "${${content}}")
+
+	while(TRUE)
+		# find the next newline
+		string(FIND "${remaining}" "\n" newline_pos)
+
+		# last line may have no newline
+		if(newline_pos EQUAL -1)
+			asm_list_append(${result} "${remaining}")
+			break()
+		endif()
+
+		# save the line and skip the newline
+		string(SUBSTRING "${remaining}" 0 ${newline_pos} current_line)
+		asm_list_append(${result} "${current_line}")
+		math(EXPR next_pos "${newline_pos} + 1")
+		string(SUBSTRING "${remaining}" ${next_pos} -1 remaining)
+	endwhile()
 endmacro()
 
 #[[
