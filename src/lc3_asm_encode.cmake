@@ -45,6 +45,60 @@ endmacro()
 # MARK: reusable encoding
 
 #[[
+	Encode an ADD/AND instruction.
+]]
+macro(
+	asm_encode_add_and
+	tokens
+	opcode_index
+	addr_var
+	labels
+	base_value
+)
+	# read operands
+	asm_operand("${tokens}" "${opcode_index}" 1 dest_str)
+	asm_operand("${tokens}" "${opcode_index}" 2 src1_str)
+	asm_operand("${tokens}" "${opcode_index}" 3 src2_or_imm)
+
+	# resolve base from opcode
+	asm_operand("${tokens}" "${opcode_index}" 0 add_name)
+	string(TOUPPER "${add_name}" add_upper)
+
+	# read DR and SR1
+	lc3_reg("${dest_str}" dest_reg)
+	lc3_reg("${src1_str}" src1_reg)
+
+	# check for immediate mode
+	asm_is_number("${src2_or_imm}" is_imm)
+	if(is_imm)
+		# build base word with imm flag
+		math(
+			EXPR
+			encoded_word
+			"${base_value} | (${dest_reg} << 9) | (${src1_reg} << 6) | 0x20"
+		)
+
+		# resolve and append imm5
+		lc3_num("${src2_or_imm}" imm_value)
+		asm_check_imm("${imm_value}" 5)
+		lc3_mask(${imm_value} 0x1F imm_value)
+		math(EXPR encoded_word "${encoded_word} | ${imm_value}")
+	else()
+		# read SR2 and build word
+		lc3_reg("${src2_or_imm}" src2_reg)
+		math(
+			EXPR
+			encoded_word
+			"${base_value} | (${dest_reg} << 9) | (${src1_reg} << 6) | ${src2_reg}"
+		)
+	endif()
+
+	# store word
+	lc3_mask(${encoded_word} ${LC3_WORD_MASK} encoded_word)
+	asm_write_word(addr ${encoded_word})
+endmacro()
+
+#[[
 	Encode a PC-relative load/store instruction (ld, ldi, lea, st, sti).
 ]]
 macro(
@@ -100,7 +154,7 @@ endmacro()
 	0001 DR SR1 1 imm5
 ]]
 macro(asm_encode_add tokens opcode_index addr_var labels)
-	# TODO: encode add
+	asm_encode_add_and("${tokens}" "${opcode_index}" ${addr_var} "${labels}" 0x1000)
 endmacro()
 
 #[[
@@ -109,7 +163,7 @@ endmacro()
 	0101 DR SR1 1 imm5
 ]]
 macro(asm_encode_and tokens opcode_index addr_var labels)
-	# TODO: encode and
+	asm_encode_add_and("${tokens}" "${opcode_index}" ${addr_var} "${labels}" 0x5000)
 endmacro()
 
 #[[
