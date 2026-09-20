@@ -91,7 +91,7 @@ macro(
 
 	# store word
 	lc3_mask(${encoded_word} ${LC3_WORD_MASK} encoded_word)
-	asm_write_word(addr ${encoded_word})
+	asm_write_word(${addr_var} ${encoded_word})
 endmacro()
 
 #[[
@@ -125,7 +125,7 @@ macro(
 		encoded_word
 		"${base_value} | (${reg_a} << 9) | (${reg_b} << 6) | ${offset_val}"
 	)
-	asm_write_word(addr ${encoded_word})
+	asm_write_word(${addr_var} ${encoded_word})
 endmacro()
 
 #[[
@@ -144,7 +144,7 @@ macro(
 	asm_operand("${tokens}" "${opcode_index}" 2 apo_label)
 
 	# resolve label to pcoffset9
-	asm_resolve_pc_offset("${apo_label}" "${labels}" "${addr}" 9 apo_offset)
+	asm_resolve_pc_offset("${apo_label}" "${labels}" "${${addr_var}}" 9 apo_offset)
 	lc3_reg("${apo_reg_str}" apo_reg)
 
 	# build and write word
@@ -169,7 +169,7 @@ macro(asm_encode_branch tokens opcode_index addr_var labels)
 	list(GET ASM_BR_BASES ${br_idx} br_base)
 
 	# resolve label to pcoffset9
-	asm_resolve_pc_offset("${br_label}" "${labels}" "${addr}" 9 br_offset)
+	asm_resolve_pc_offset("${br_label}" "${labels}" "${${addr_var}}" 9 br_offset)
 
 	# build and store word
 	lc3_mask(${br_offset} 0x1FF br_offset)
@@ -250,7 +250,7 @@ macro(asm_encode_jsr tokens opcode_index addr_var labels)
 	asm_operand("${tokens}" "${opcode_index}" 1 jump_label)
 
 	# resolve label to pcoffset11
-	asm_resolve_pc_offset("${jump_label}" "${labels}" "${addr}" 11 branch_offset)
+	asm_resolve_pc_offset("${jump_label}" "${labels}" "${${addr_var}}" 11 branch_offset)
 
 	# build and store word
 	lc3_mask(${branch_offset} 0x7FF branch_offset)

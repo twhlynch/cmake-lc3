@@ -333,7 +333,7 @@ endmacro()
 ]]
 macro(asm_register_label labels label addr)
 	# check for duplicate
-	foreach(entry ${${labels}})
+	foreach(entry IN LISTS ${labels})
 		# get name
 		string(FIND "${entry}:" ":" colon_pos)
 		string(SUBSTRING "${entry}" 0 ${colon_pos} entry_name)

@@ -103,6 +103,7 @@ endmacro()
 macro(asm_pass2 source_lines_var labels_var)
 	set(addr 0)
 	set(origin 0)
+	set(labels "${${labels_var}}")
 
 	foreach(raw_line IN LISTS ${source_lines_var})
 		# tokenize line and detect label
