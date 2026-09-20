@@ -280,6 +280,26 @@ macro(asm_operand tokens opcode_index n result)
 endmacro()
 
 #[[
+	Validate that an opcode has exactly the expected operand count.
+]]
+macro(asm_require_operands tokens opcode_index expected)
+	# count tokens after the opcode
+	set(operand_tokens "${tokens}")
+	list(LENGTH operand_tokens operand_total)
+	math(EXPR operand_count "${operand_total} - ${opcode_index} - 1")
+
+	# read opcode for the error message
+	list(GET operand_tokens ${opcode_index} operand_opcode)
+
+	# compare against expected
+	set(expected_count "${expected}") # copy to local (see assert note)
+	lc3_assert(
+		operand_count EQUAL expected_count
+		"${operand_opcode} expects ${expected} operands, got ${operand_count}"
+	)
+endmacro()
+
+#[[
 	Validate that an immediate value fits in a signed N-bit field.
 ]]
 macro(asm_check_imm value bits)

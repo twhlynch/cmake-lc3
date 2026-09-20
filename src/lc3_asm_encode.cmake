@@ -56,6 +56,7 @@ macro(
 	base_value
 )
 	# read operands
+	asm_require_operands("${tokens}" "${opcode_index}" 3)
 	asm_operand("${tokens}" "${opcode_index}" 1 dest_str)
 	asm_operand("${tokens}" "${opcode_index}" 2 src1_str)
 	asm_operand("${tokens}" "${opcode_index}" 3 src2_or_imm)
@@ -106,6 +107,7 @@ macro(
 	base_value
 )
 	# read operands
+	asm_require_operands("${tokens}" "${opcode_index}" 3)
 	asm_operand("${tokens}" "${opcode_index}" 1 reg_a_str)
 	asm_operand("${tokens}" "${opcode_index}" 2 reg_b_str)
 	asm_operand("${tokens}" "${opcode_index}" 3 offset_str)
@@ -140,6 +142,7 @@ macro(
 	base_value
 )
 	# read reg and label
+	asm_require_operands("${tokens}" "${opcode_index}" 2)
 	asm_operand("${tokens}" "${opcode_index}" 1 apo_reg_str)
 	asm_operand("${tokens}" "${opcode_index}" 2 apo_label)
 
@@ -160,6 +163,7 @@ endmacro()
 ]]
 macro(asm_encode_branch tokens opcode_index addr_var labels)
 	# read label
+	asm_require_operands("${tokens}" "${opcode_index}" 1)
 	asm_operand("${tokens}" "${opcode_index}" 1 br_label)
 
 	# look up condition bits for this BR variant
@@ -202,6 +206,7 @@ endmacro()
 ]]
 macro(asm_encode_not tokens opcode_index addr_var labels)
 	# read operands
+	asm_require_operands("${tokens}" "${opcode_index}" 2)
 	asm_operand("${tokens}" "${opcode_index}" 1 dest_str)
 	asm_operand("${tokens}" "${opcode_index}" 2 src_str)
 
@@ -233,6 +238,7 @@ endmacro()
 ]]
 macro(asm_encode_jmp tokens opcode_index addr_var labels)
 	# read BR
+	asm_require_operands("${tokens}" "${opcode_index}" 1)
 	asm_operand("${tokens}" "${opcode_index}" 1 base_str)
 	lc3_reg("${base_str}" base_reg)
 
@@ -247,6 +253,7 @@ endmacro()
 ]]
 macro(asm_encode_jsr tokens opcode_index addr_var labels)
 	# read label
+	asm_require_operands("${tokens}" "${opcode_index}" 1)
 	asm_operand("${tokens}" "${opcode_index}" 1 jump_label)
 
 	# resolve label to pcoffset11
@@ -264,6 +271,7 @@ endmacro()
 ]]
 macro(asm_encode_jsrr tokens opcode_index addr_var labels)
 	# read BR
+	asm_require_operands("${tokens}" "${opcode_index}" 1)
 	asm_operand("${tokens}" "${opcode_index}" 1 base_str)
 	lc3_reg("${base_str}" base_reg)
 
@@ -326,6 +334,7 @@ endmacro()
 ]]
 macro(asm_encode_trap tokens opcode_index addr_var labels)
 	# read vector
+	asm_require_operands("${tokens}" "${opcode_index}" 1)
 	asm_operand("${tokens}" "${opcode_index}" 1 trap_vector)
 
 	# resolve and check vector8
@@ -346,5 +355,6 @@ endmacro()
 	1000 000000000000
 ]]
 macro(asm_encode_rti tokens opcode_index addr_var labels)
+	asm_require_operands("${tokens}" "${opcode_index}" 0)
 	asm_write_word(${addr_var} 0x8000)
 endmacro()
