@@ -42,7 +42,7 @@ macro(asm_encode_pseudo opcode handled addr_var)
 	endif()
 endmacro()
 
-# MARK: per instruction encoding
+# MARK: reusable encoding
 
 #[[
 	Encode a PC-relative load/store instruction (ld, ldi, lea, st, sti).
@@ -68,6 +68,8 @@ macro(
 	math(EXPR apo_word "${base_value} | (${apo_reg} << 9) | ${apo_offset}")
 	asm_write_word(${addr_var} ${apo_word})
 endmacro()
+
+# MARK: instruction encoding
 
 #[[
 	Encode a BR instruction with the given condition bits base value.
