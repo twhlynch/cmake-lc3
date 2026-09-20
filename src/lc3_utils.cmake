@@ -1,4 +1,4 @@
-# MARK: contants
+# MARK: constants
 
 set(LC3_REGISTER_COUNT 8)
 set(LC3_REGISTER_BITS 3)

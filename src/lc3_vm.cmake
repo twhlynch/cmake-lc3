@@ -43,7 +43,7 @@ macro(vm_update_condition_codes val)
 endmacro()
 
 #[[
-	Read a 16-bit word from memory orelse 0.
+	Read a 16-bit word from memory or else 0.
 ]]
 macro(vm_memread addr result)
 	# check privilege
