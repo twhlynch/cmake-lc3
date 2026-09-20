@@ -99,6 +99,44 @@ macro(
 endmacro()
 
 #[[
+	Encode a BaseR plus offset6 instruction (LDR, STR).
+]]
+macro(
+	asm_encode_base_offset
+	tokens
+	opcode_index
+	addr_var
+	labels
+	base_value
+)
+	# read operands
+	asm_operand("${tokens}" "${opcode_index}" 1 reg_a_str)
+	asm_operand("${tokens}" "${opcode_index}" 2 reg_b_str)
+	asm_operand("${tokens}" "${opcode_index}" 3 offset_str)
+
+	# resolve base from opcode
+	asm_operand("${tokens}" "${opcode_index}" 0 base_name)
+	string(TOUPPER "${base_name}" base_upper)
+
+	# read regs
+	lc3_reg("${reg_a_str}" reg_a)
+	lc3_reg("${reg_b_str}" reg_b)
+
+	# resolve offset6
+	lc3_num("${offset_str}" offset_val)
+	asm_check_imm("${offset_val}" 6)
+
+	# build and store word
+	lc3_mask(${offset_val} 0x3F offset_val)
+	math(
+		EXPR
+		encoded_word
+		"${base_value} | (${reg_a} << 9) | (${reg_b} << 6) | ${offset_val}"
+	)
+	asm_write_word(addr ${encoded_word})
+endmacro()
+
+#[[
 	Encode a PC-relative load/store instruction (ld, ldi, lea, st, sti).
 ]]
 macro(
@@ -194,7 +232,7 @@ endmacro()
 	0110 DR BaseR offset6
 ]]
 macro(asm_encode_ldr tokens opcode_index addr_var labels)
-	# TODO: encode ldr
+	asm_encode_base_offset("${tokens}" "${opcode_index}" ${addr_var} "${labels}" 0x6000)
 endmacro()
 
 #[[
@@ -255,7 +293,7 @@ endmacro()
 	0111 SR BaseR offset6
 ]]
 macro(asm_encode_str tokens opcode_index addr_var labels)
-	# TODO: encode str
+	asm_encode_base_offset("${tokens}" "${opcode_index}" ${addr_var} "${labels}" 0x7000)
 endmacro()
 
 #[[
