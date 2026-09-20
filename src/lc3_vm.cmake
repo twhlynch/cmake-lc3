@@ -145,7 +145,7 @@ macro(lc3_vm_reset)
 	set(CC_P 0)
 
 	# default to x3000
-	set(PC 12288)
+	set(PC ${LC3_USER_MIN})
 
 	# unhalt
 	set(VM_HALT 0)
