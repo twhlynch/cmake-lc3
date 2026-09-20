@@ -117,7 +117,22 @@ endmacro()
 	1001 DR SR 111111
 ]]
 macro(asm_encode_not tokens opcode_index addr_var labels)
-	# TODO: encode not
+	# read operands
+	asm_operand("${tokens}" "${opcode_index}" 1 dest_str)
+	asm_operand("${tokens}" "${opcode_index}" 2 src_str)
+
+	# read DR and SR
+	lc3_reg("${dest_str}" dest_reg)
+	lc3_reg("${src_str}" src_reg)
+
+	# build and store word
+	math(
+		EXPR
+		encoded_word
+		"0x9000 | (${dest_reg} << 9) | (${src_reg} << 6) | 0x3F"
+	)
+	lc3_mask(${encoded_word} ${LC3_WORD_MASK} encoded_word)
+	asm_write_word(${addr_var} ${encoded_word})
 endmacro()
 
 #[[
