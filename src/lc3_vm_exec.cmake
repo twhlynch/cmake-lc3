@@ -111,11 +111,11 @@ endmacro()
 	0100 0 00 BR1 000000
 ]]
 macro(vm_exec_jsr instruction)
-	# read jsrr flag
-	lc3_bits(${instruction} 11 1 jsrr_flag)
+	# read flag, 1 means JSR 0 means JSRR
+	lc3_bits(${instruction} 11 1 is_jsr)
 
 	# save base in case BaseR is R7
-	if(NOT jsrr_flag)
+	if(NOT is_jsr)
 		lc3_bits(${instruction} 6 ${LC3_REGISTER_BITS} base_reg)
 		vm_getreg(${base_reg} saved_base_val)
 	endif()
@@ -123,7 +123,7 @@ macro(vm_exec_jsr instruction)
 	# save return address in R7
 	vm_setreg(7 ${PC})
 
-	if(jsrr_flag)
+	if(is_jsr)
 		# sign extend pcoffset11
 		lc3_sign_extend("${instruction}" 11 offset)
 
