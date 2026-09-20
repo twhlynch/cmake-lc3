@@ -197,6 +197,10 @@ macro(lc3_fmt_pad value width result)
 	# build padding
 	string(LENGTH "${value}" value_len)
 	math(EXPR fmt_pad "${width} - ${value_len}")
+	# clamp to 0 when value is wider
+	if(fmt_pad LESS 0)
+		set(fmt_pad 0)
+	endif()
 	string(REPEAT " " ${fmt_pad} fmt_pad_str)
 
 	# join padding and value
