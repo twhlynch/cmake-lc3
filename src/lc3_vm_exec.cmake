@@ -58,7 +58,6 @@ macro(vm_exec_and instruction)
 	endif()
 
 	# and SR1 and value
-	vm_getreg(${src1_reg} val1)
 	math(EXPR result "${val1} & ${val2}")
 
 	# store result in DR
